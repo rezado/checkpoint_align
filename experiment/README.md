@@ -102,7 +102,7 @@ both A and B for two 20M-instruction BBV windows:
 | Pair | Alignment score | Margin | Post-restore overlaps |
 |---|---:|---:|---:|
 | `lbm A20 -> B20` | 0.932 | 0.885 | 0.799, 0.985 |
-| `mcf A1 -> B1` | 0.830 | 0.493 | 0.961, 0.927 |
+| `mcf A1 -> B1` | 0.830 | 0.493 | 0.956, 0.914 |
 | `astar_biglakes A5 -> B5` | 0.903 | 0.138 | 0.983, 0.946 |
 | `cactusADM A7 -> B7` | 0.868 | 0.415 | 1.000, 0.945 |
 

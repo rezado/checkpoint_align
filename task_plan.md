@@ -9,6 +9,7 @@
 - [complete] 更新文档与忽略规则，初始化本地 Git 并提交可管理源码
 - [complete] 运行核心 CLI/单元验证并记录结果
 - [complete] 实际运行代表性 workload checkpoint，并验证 suite relocation 后 replay 仍可用
+- [complete] 编写代码、使用方法与当前结果的统一中文文档
 
 ## Errors Encountered
 | Error | Attempt | Resolution |

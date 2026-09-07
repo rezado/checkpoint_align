@@ -25,3 +25,6 @@ The profile export layout is documented in
 generated results are excluded by [`.gitignore`](.gitignore); only the
 reproducible implementation, tests, fixtures, and documentation belong in
 this repository.
+
+完整的中文代码说明、使用方法和当前结果见
+[`checkpoint-alignment-guide-zh.md`](checkpoint-alignment-guide-zh.md)。
