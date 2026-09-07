@@ -128,14 +128,19 @@ def command_prepare(args: argparse.Namespace) -> None:
                     if name in required_artifacts:
                         raise FileNotFoundError(sources[name])
                     continue
-                copied[workload][side][name] = copy_file(sources[name], targets[name])
+                entry = copy_file(sources[name], targets[name])
+                # Keep manifests relocatable; hashes remain tied to exact bytes.
+                entry["path"] = str(targets[name].relative_to(suite))
+                copied[workload][side][name] = entry
 
     tools = {}
     if args.nemu:
         tools["nemu"] = copy_file(args.nemu.resolve(), suite / "tools" / "riscv64-nemu-interpreter")
+        tools["nemu"]["path"] = str(Path(tools["nemu"]["path"]).relative_to(suite))
         (suite / "tools" / "riscv64-nemu-interpreter").chmod(0o755)
     if args.gcpt:
         tools["gcpt"] = copy_file(args.gcpt.resolve(), suite / "tools" / "gcpt.bin")
+        tools["gcpt"]["path"] = str(Path(tools["gcpt"]["path"]).relative_to(suite))
 
     manifest = {
         "schema_version": 1,

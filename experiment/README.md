@@ -50,7 +50,9 @@ The profile roots use the conventional export layout (`elf/`, `bin/`, `json/`,
 `cluster/`, `profiling/`, and `logs/`). Workload names only need to be present
 with the required ELF, firmware, JSON, SimPoint, and BBV files on both sides;
 optional logs are copied when available. Existing manifests without `sides`
-remain compatible and default to `A`/`B`.
+remain compatible and default to `A`/`B`. Newly generated manifests store
+copied artifact paths relative to the suite, so a prepared suite can be moved
+without breaking replay.
 
 Useful controls:
 

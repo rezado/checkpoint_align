@@ -20,3 +20,5 @@
 - 包内 17 个单元测试通过；临时 `demo` workload 验证自动发现和 `baseline/candidate` 标签 prepare 通过。
 - 已执行 `git init`，待完成首个源码提交和最终状态检查。
 - 已在 `main` 分支完成首个提交 `1676951`；提交后语法检查和 17 个包内单元测试均通过，工作区干净，忽略规则覆盖复制产物和生成结果。
+- 重新执行 `mcf` checkpoint：target checkpoint 生成成功，source/target restore 均 NEMU good state，最低 post-restore overlap 为 0.9144，report 汇总 6 个 workload。
+- 修复新 manifest 的复制路径为 suite 相对路径，并保留旧绝对路径的存在性/本地回退；临时 suite 移动后 replay 结果保持一致。

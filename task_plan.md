@@ -8,6 +8,7 @@
 - [complete] 实现自动发现 workload、可配置 source/target 标签和通用结果路径
 - [complete] 更新文档与忽略规则，初始化本地 Git 并提交可管理源码
 - [complete] 运行核心 CLI/单元验证并记录结果
+- [complete] 实际运行代表性 workload checkpoint，并验证 suite relocation 后 replay 仍可用
 
 ## Errors Encountered
 | Error | Attempt | Resolution |

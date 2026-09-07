@@ -57,7 +57,14 @@ def _run_spec(
 
     def artifact_path(name: str, relative: Path) -> Path:
         recorded = copied.get(name, {}).get("path")
-        return Path(recorded) if recorded else base / relative
+        if not recorded:
+            return base / relative
+        path = Path(recorded)
+        if not path.is_absolute():
+            return suite / path
+        # Older manifests used absolute paths.  Prefer them when still valid,
+        # then fall back to the suite-local copy after relocation.
+        return path if path.is_file() else base / relative
 
     metadata_path = artifact_path("json", Path("json") / f"{workload}.json")
     metadata = _read_json(metadata_path)
