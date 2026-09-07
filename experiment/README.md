@@ -1,6 +1,6 @@
 # Cross-ELF checkpoint experiment
 
-`cross_elf_checkpoint.py` provides a manifest-driven three-stage workflow:
+`cross_elf_checkpoint.py` provides a manifest-driven workflow:
 
 1. `prepare`: copy each workload's ELF, firmware, command, profile, cluster,
    JSON, and provenance logs into a self-contained suite. If `--workloads` is
@@ -11,6 +11,11 @@
 3. `checkpoint`: generate one target-native checkpoint for an accepted
    candidate, bounded-restore both the original source checkpoint and the new target checkpoint,
    profile the restored windows, and write a structured result.
+4. `map-checkpoints`: require every checkpoint actually present under the
+   source profile to have a target candidate and write the complete mapping.
+5. `checkpoint-all`: generate all selected target checkpoints in one NEMU run,
+   then optionally restore/profile every source-target pair. It supports
+   planning, explicit inclusion of rejected candidates, and resume.
 
 The method never treats BB IDs, PCs, or raw instruction positions as shared
 across ELF files. It is still an experimental BBV/DCFG proxy rather than a
@@ -42,6 +47,18 @@ python3 experiment/cross_elf_checkpoint.py checkpoint \
   --suite experiment/multi-workload \
   --workload mcf --source-point 1
 
+python3 experiment/cross_elf_checkpoint.py map-checkpoints \
+  --suite experiment/multi-workload --workload mcf
+
+# Review all mappings without running NEMU.
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite experiment/multi-workload --workload mcf --plan-only
+
+# Materialize a B candidate for every A checkpoint, including ambiguous ones.
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite experiment/multi-workload --workload mcf \
+  --include-rejected --timeout 86400
+
 python3 experiment/cross_elf_checkpoint.py report \
   --suite experiment/multi-workload
 ```
@@ -61,6 +78,8 @@ align:      --workloads, --points, --radius, --context,
             --min-score, --min-margin
 checkpoint: --warmup, --boot-allowance, --generation-tail,
             --restore-instructions, --min-post-restore-overlap, --timeout
+checkpoint-all: the same runtime controls, plus --include-rejected,
+                --plan-only, --skip-validation, --resume
 ```
 
 `checkpoint` refuses rejected candidates by default. `--force` exists only for

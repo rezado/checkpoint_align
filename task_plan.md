@@ -10,6 +10,10 @@
 - [complete] 运行核心 CLI/单元验证并记录结果
 - [complete] 实际运行代表性 workload checkpoint，并验证 suite relocation 后 replay 仍可用
 - [complete] 编写代码、使用方法与当前结果的统一中文文档
+- [complete] 将 checkpoint 流程扩展为覆盖 A 侧全部实际 checkpoint 的批处理
+- [complete] 为每个 A checkpoint 输出 B 候选、置信度和批量执行状态，并支持断点续跑
+- [complete] 用 mcf 的 22 个实际 checkpoint 验证覆盖关系和代表性批处理路径
+- [complete] 更新使用文档并提交 Git
 
 ## Errors Encountered
 | Error | Attempt | Resolution |

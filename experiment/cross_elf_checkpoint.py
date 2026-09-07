@@ -353,11 +353,15 @@ def run_logged(command: list[str], stdout: Path, stderr: Path, timeout: int) -> 
 
 def parse_runtime_log(path: Path) -> dict:
     text = path.read_text(errors="replace")
-    checkpoint_count = re.search(r"Taking checkpoint @ instruction count ([0-9]+)", text)
+    checkpoint_counts = [
+        int(value)
+        for value in re.findall(r"Taking checkpoint @ instruction count ([0-9]+)", text)
+    ]
     guest_count = re.search(r"total guest instructions = ([0-9][0-9,]*)", text)
     return {
         "checkpoint_done": "Checkpoint done!" in text,
-        "checkpoint_instruction": int(checkpoint_count.group(1)) if checkpoint_count else None,
+        "checkpoint_instruction": checkpoint_counts[0] if checkpoint_counts else None,
+        "checkpoint_instructions": checkpoint_counts,
         "guest_instructions": int(guest_count.group(1).replace(",", "")) if guest_count else None,
         "nemu_good_state": "NEMU exit with good state" in text,
         "hit_good_trap": "HIT GOOD TRAP" in text,
@@ -380,6 +384,94 @@ def copy_source_checkpoint(
     target = suite / "workloads" / workload / source_side / "checkpoint" / str(point) / candidates[0].name
     copy_file(candidates[0], target)
     return target
+
+
+def source_checkpoint_files(source_root: Path, workload: str) -> dict[int, Path]:
+    checkpoint_root = source_root / "checkpoint" / workload
+    checkpoints = {}
+    for point_dir in checkpoint_root.iterdir():
+        if not point_dir.is_dir() or not point_dir.name.isdigit():
+            continue
+        candidates = sorted(point_dir.glob("*_memory_.zstd"))
+        if len(candidates) != 1:
+            raise RuntimeError(
+                f"expected one source checkpoint for {workload}:{point_dir.name}, "
+                f"found {len(candidates)}"
+            )
+        checkpoints[int(point_dir.name)] = candidates[0]
+    if not checkpoints:
+        raise RuntimeError(f"no source checkpoints found below {checkpoint_root}")
+    return checkpoints
+
+
+def build_checkpoint_correspondence(suite: Path, workload: str) -> dict:
+    manifest = read_json(suite / "suite-manifest.json")
+    source_side, target_side = side_labels(manifest)
+    alignment = read_json(suite / "results" / workload / "alignment.json")
+    checkpoints = source_checkpoint_files(Path(manifest["source_profile_root"]), workload)
+    regions = {region["source_point_a"]: region for region in alignment["regions"]}
+    missing = sorted(set(checkpoints) - set(regions))
+    if missing:
+        raise RuntimeError(
+            f"alignment does not cover {len(missing)} source checkpoints for {workload}: {missing}; "
+            "rerun align without a partial --points selection"
+        )
+
+    target_sources: dict[int, list[int]] = {}
+    mappings = []
+    for source_point, checkpoint in sorted(checkpoints.items()):
+        region = regions[source_point]
+        target_point = region["best"]["target_point_b"]
+        target_sources.setdefault(target_point, []).append(source_point)
+        mappings.append({
+            "source_side": source_side,
+            "source_point": source_point,
+            "source_checkpoint": str(checkpoint),
+            "target_side": target_side,
+            "target_point": target_point,
+            "alignment_status": region["status"],
+            "confidence": region["confidence"],
+            "score": region["best"]["score"],
+            "margin": region["margin"],
+            "materialization_recommended": region["status"] == "accepted_experimental",
+        })
+    for mapping in mappings:
+        mapping["target_collision_sources"] = target_sources[mapping["target_point"]]
+
+    result = {
+        "schema_version": 1,
+        "workload": workload,
+        "source_side": source_side,
+        "target_side": target_side,
+        "source_checkpoint_count": len(checkpoints),
+        "mapped_checkpoint_count": len(mappings),
+        "unique_target_point_count": len(target_sources),
+        "all_source_checkpoints_mapped": len(checkpoints) == len(mappings),
+        "recommended_mapping_count": sum(
+            mapping["materialization_recommended"] for mapping in mappings
+        ),
+        "candidate_only_mapping_count": sum(
+            not mapping["materialization_recommended"] for mapping in mappings
+        ),
+        "production_eligible": False,
+        "mappings": mappings,
+    }
+    write_json(suite / "results" / workload / "checkpoint-correspondence.json", result)
+    return result
+
+
+def command_map_checkpoints(args: argparse.Namespace) -> None:
+    result = build_checkpoint_correspondence(args.suite.resolve(), args.workload)
+    print(json.dumps(result, indent=2))
+
+
+def checkpoint_for_point(root: Path, workload: str, point: int) -> Path | None:
+    candidates = sorted((root / "aligned" / workload / str(point)).glob("*_memory_.zstd"))
+    if not candidates:
+        return None
+    if len(candidates) != 1:
+        raise RuntimeError(f"expected one target checkpoint for {workload}:{point}, found {len(candidates)}")
+    return candidates[0]
 
 
 def profile_after_restore(
@@ -519,17 +611,257 @@ def command_checkpoint(args: argparse.Namespace) -> None:
     print(json.dumps(result, indent=2))
 
 
+def command_checkpoint_all(args: argparse.Namespace) -> None:
+    suite = args.suite.resolve()
+    manifest = read_json(suite / "suite-manifest.json")
+    source_side, target_side = side_labels(manifest)
+    interval = manifest["interval_instructions"]
+    correspondence = build_checkpoint_correspondence(suite, args.workload)
+    if args.plan_only:
+        print(json.dumps(correspondence, indent=2))
+        return
+
+    mappings = [
+        mapping for mapping in correspondence["mappings"]
+        if mapping["materialization_recommended"] or args.include_rejected
+    ]
+    skipped = [
+        mapping for mapping in correspondence["mappings"]
+        if mapping not in mappings
+    ]
+    if not mappings:
+        raise RuntimeError(
+            "no checkpoint mapping passed the alignment gates; use --include-rejected "
+            "only when candidate checkpoints are explicitly required"
+        )
+
+    result_root = suite / "results" / args.workload
+    batch_path = result_root / "checkpoint-all-result.json"
+    generation_root = result_root / "checkpoint-all-target-generation"
+    cluster_root = result_root / "checkpoint-all-target-cluster"
+    log_root = result_root / "checkpoint-all-logs"
+    selected_target_points = sorted({mapping["target_point"] for mapping in mappings})
+    existing = {
+        point: checkpoint_for_point(generation_root, args.workload, point)
+        for point in selected_target_points
+    }
+    if not args.resume and any(existing.values()):
+        raise RuntimeError(
+            f"target checkpoints already exist below {generation_root}; use --resume to reuse them"
+        )
+    missing_target_points = [point for point, checkpoint in existing.items() if checkpoint is None]
+
+    generation_stats = None
+    if missing_target_points:
+        cluster = cluster_root / args.workload
+        cluster.mkdir(parents=True, exist_ok=True)
+        (cluster / "simpoints0").write_text(
+            "".join(f"{point} {cluster_id}\n" for cluster_id, point in enumerate(missing_target_points))
+        )
+        (cluster / "weights0").write_text(
+            "".join(f"1.0 {cluster_id}\n" for cluster_id, _ in enumerate(missing_target_points))
+        )
+        trigger = max(0, max(missing_target_points) * interval - args.warmup)
+        max_instructions = args.boot_allowance + trigger + args.generation_tail
+        command = [
+            str(suite / "tools" / "riscv64-nemu-interpreter"),
+            str(local_files(suite, args.workload, target_side)["firmware"]),
+            "-D", str(generation_root), "-w", args.workload, "-C", "aligned", "-b",
+            "-I", str(max_instructions), "-S", str(cluster_root),
+            "--cpt-interval", str(interval), "--warmup-interval", str(args.warmup),
+            "--checkpoint-format", "zstd",
+        ]
+        return_code = run_logged(
+            command, log_root / "generate.out.log", log_root / "generate.err.log", args.timeout,
+        )
+        generation_stats = {
+            "command": command,
+            "return_code": return_code,
+            **parse_runtime_log(log_root / "generate.out.log"),
+        }
+        if return_code != 0:
+            write_json(batch_path, {
+                "schema_version": 1,
+                "workload": args.workload,
+                "status": "generation_failed",
+                "generation": generation_stats,
+            })
+            raise RuntimeError(f"batch target checkpoint generation failed with rc={return_code}")
+
+    target_checkpoints = {}
+    for point in selected_target_points:
+        checkpoint = checkpoint_for_point(generation_root, args.workload, point)
+        if checkpoint is None:
+            raise RuntimeError(f"target checkpoint was not generated for {args.workload}:{point}")
+        subprocess.run(
+            ["zstd", "-t", str(checkpoint)], check=True,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        target_checkpoints[point] = checkpoint
+
+    pair_results = []
+    batch = {
+        "schema_version": 1,
+        "workload": args.workload,
+        "source_side": source_side,
+        "target_side": target_side,
+        "include_rejected": args.include_rejected,
+        "validation_enabled": not args.skip_validation,
+        "source_checkpoint_count": correspondence["source_checkpoint_count"],
+        "selected_mapping_count": len(mappings),
+        "skipped_mapping_count": len(skipped),
+        "selected_target_point_count": len(selected_target_points),
+        "generation": generation_stats or {"status": "reused"},
+        "pairs": pair_results,
+        "production_eligible": False,
+    }
+    for mapping in mappings:
+        source_point = mapping["source_point"]
+        target_point = mapping["target_point"]
+        output = result_root / f"{source_side}{source_point}-{target_side}{target_point}"
+        result_path = output / "checkpoint-result.json"
+        if args.resume and result_path.is_file() and not args.skip_validation:
+            pair_results.append(read_json(result_path))
+            write_json(batch_path, batch)
+            continue
+
+        source_checkpoint = copy_source_checkpoint(
+            Path(manifest["source_profile_root"]), suite, args.workload, source_side, source_point,
+        )
+        target_checkpoint = target_checkpoints[target_point]
+        pair = {
+            "schema_version": 1,
+            "workload": args.workload,
+            "source_side": source_side,
+            "target_side": target_side,
+            "source_point_a": source_point,
+            "source_point": source_point,
+            "target_point_b": target_point,
+            "target_point": target_point,
+            "alignment": {
+                "score": mapping["score"],
+                "margin": mapping["margin"],
+                "confidence": mapping["confidence"],
+                "status": mapping["alignment_status"],
+            },
+            "source_checkpoint": {"path": str(source_checkpoint), "sha256": sha256(source_checkpoint)},
+            "target_checkpoint": {"path": str(target_checkpoint), "sha256": sha256(target_checkpoint)},
+            "generation": generation_stats or {"status": "reused", "checkpoint_instruction": None},
+            "production_eligible": False,
+        }
+        if args.skip_validation:
+            pair.update({
+                "bounded_restore_only": False,
+                "workload_terminal_completion": False,
+                "status": "materialized_unvalidated",
+            })
+            pair_results.append(pair)
+            write_json(batch_path, batch)
+            continue
+
+        try:
+            source_profile, source_restore = profile_after_restore(
+                suite / "tools" / "riscv64-nemu-interpreter",
+                suite / "tools" / "gcpt.bin", source_checkpoint,
+                output / "source-restore", args.workload, interval,
+                args.restore_instructions, args.timeout,
+            )
+            target_profile, target_restore = profile_after_restore(
+                suite / "tools" / "riscv64-nemu-interpreter",
+                suite / "tools" / "gcpt.bin", target_checkpoint,
+                output / "target-restore", args.workload, interval,
+                args.restore_instructions, args.timeout,
+            )
+            post_restore = compare_profiles(source_profile, target_profile)
+            minimum_overlap = min(
+                (window["count_multiset_overlap"] for window in post_restore), default=0.0
+            )
+            pair.update({
+                "source_restore": source_restore,
+                "target_restore": target_restore,
+                "post_restore_windows": post_restore,
+                "minimum_post_restore_overlap": minimum_overlap,
+                "minimum_post_restore_overlap_threshold": args.min_post_restore_overlap,
+                "bounded_restore_only": True,
+                "workload_terminal_completion": False,
+                "status": (
+                    "validated_experimental"
+                    if minimum_overlap >= args.min_post_restore_overlap
+                    else "rejected_post_restore_divergence"
+                ),
+            })
+        except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+            pair.update({
+                "bounded_restore_only": True,
+                "workload_terminal_completion": False,
+                "status": "validation_failed",
+                "error": str(error),
+            })
+        write_json(result_path, pair)
+        pair_results.append(pair)
+        write_json(batch_path, batch)
+
+    statuses = Counter(pair["status"] for pair in pair_results)
+    batch["totals"] = {
+        "pairs": len(pair_results),
+        "status_counts": dict(statuses),
+        "all_selected_pairs_materialized": len(pair_results) == len(mappings),
+        "all_source_checkpoints_materialized": len(pair_results) == correspondence["source_checkpoint_count"],
+    }
+    if not batch["totals"]["all_source_checkpoints_materialized"]:
+        batch["status"] = "partial"
+    elif statuses.get("validation_failed") or statuses.get("rejected_post_restore_divergence"):
+        batch["status"] = "complete_with_validation_failures"
+    else:
+        batch["status"] = "complete"
+    write_json(batch_path, batch)
+    print(json.dumps(batch, indent=2))
+
+
 def command_report(args: argparse.Namespace) -> None:
     suite = args.suite.resolve()
     manifest = read_json(suite / "suite-manifest.json")
-    report = {"schema_version": 1, "workloads": [], "checkpoint_experiments": []}
+    report = {
+        "schema_version": 1,
+        "workloads": [],
+        "checkpoint_correspondence": [],
+        "checkpoint_batches": [],
+        "checkpoint_experiments": [],
+    }
     for workload in manifest["workloads"]:
         alignment_path = suite / "results" / workload / "alignment.json"
         if alignment_path.is_file():
             report["workloads"].append(alignment_summary(read_json(alignment_path)))
+        correspondence_path = suite / "results" / workload / "checkpoint-correspondence.json"
+        if correspondence_path.is_file():
+            correspondence = read_json(correspondence_path)
+            report["checkpoint_correspondence"].append({
+                "workload": workload,
+                "source_checkpoint_count": correspondence["source_checkpoint_count"],
+                "mapped_checkpoint_count": correspondence["mapped_checkpoint_count"],
+                "unique_target_point_count": correspondence["unique_target_point_count"],
+                "all_source_checkpoints_mapped": correspondence["all_source_checkpoints_mapped"],
+                "recommended_mapping_count": correspondence["recommended_mapping_count"],
+                "candidate_only_mapping_count": correspondence["candidate_only_mapping_count"],
+            })
+        batch_path = suite / "results" / workload / "checkpoint-all-result.json"
+        if batch_path.is_file():
+            batch = read_json(batch_path)
+            report["checkpoint_batches"].append({
+                "workload": workload,
+                "status": batch.get("status"),
+                "source_checkpoint_count": batch.get("source_checkpoint_count"),
+                "selected_mapping_count": batch.get("selected_mapping_count"),
+                "skipped_mapping_count": batch.get("skipped_mapping_count"),
+                "totals": batch.get("totals", {}),
+                "result": str(batch_path),
+            })
         for result_path in sorted((suite / "results" / workload).glob("*/checkpoint-result.json")):
             result = read_json(result_path)
-            overlaps = [window["count_multiset_overlap"] for window in result["post_restore_windows"]]
+            overlaps = [
+                window["count_multiset_overlap"]
+                for window in result.get("post_restore_windows", [])
+            ]
             report["checkpoint_experiments"].append({
                 "workload": workload,
                 "source_side": result.get("source_side", "A"),
@@ -538,9 +870,9 @@ def command_report(args: argparse.Namespace) -> None:
                 "target_point_b": result["target_point_b"],
                 "alignment_score": result["alignment"]["score"],
                 "alignment_margin": result["alignment"]["margin"],
-                "generation_checkpoint_instruction": result["generation"]["checkpoint_instruction"],
-                "source_restore_good_state": result["source_restore"]["nemu_good_state"],
-                "target_restore_good_state": result["target_restore"]["nemu_good_state"],
+                "generation_checkpoint_instruction": result.get("generation", {}).get("checkpoint_instruction"),
+                "source_restore_good_state": result.get("source_restore", {}).get("nemu_good_state"),
+                "target_restore_good_state": result.get("target_restore", {}).get("nemu_good_state"),
                 "post_restore_window_overlaps": overlaps,
                 "minimum_post_restore_overlap": min(overlaps) if overlaps else None,
                 "status": result["status"],
@@ -551,6 +883,8 @@ def command_report(args: argparse.Namespace) -> None:
         "workloads": len(report["workloads"]),
         "regions": sum(item["regions"] for item in report["workloads"]),
         "accepted_experimental": sum(item["accepted"] for item in report["workloads"]),
+        "checkpoint_correspondence_workloads": len(report["checkpoint_correspondence"]),
+        "checkpoint_batches": len(report["checkpoint_batches"]),
         "checkpoint_experiments": len(report["checkpoint_experiments"]),
         "validated_experimental": sum(
             item["status"] == "validated_experimental" for item in report["checkpoint_experiments"]
@@ -601,6 +935,44 @@ def build_parser() -> argparse.ArgumentParser:
     checkpoint.add_argument("--timeout", type=int, default=180)
     checkpoint.add_argument("--force", action="store_true")
     checkpoint.set_defaults(func=command_checkpoint)
+
+    mapping = subparsers.add_parser(
+        "map-checkpoints",
+        help="map every source checkpoint to its best target checkpoint candidate",
+    )
+    mapping.add_argument("--suite", type=Path, required=True)
+    mapping.add_argument("--workload", required=True)
+    mapping.set_defaults(func=command_map_checkpoints)
+
+    checkpoint_all = subparsers.add_parser(
+        "checkpoint-all",
+        help="materialize and optionally validate target checkpoints for all source checkpoints",
+    )
+    checkpoint_all.add_argument("--suite", type=Path, required=True)
+    checkpoint_all.add_argument("--workload", required=True)
+    checkpoint_all.add_argument("--warmup", type=int, default=DEFAULT_INTERVAL)
+    checkpoint_all.add_argument("--boot-allowance", type=int, default=180_000_000)
+    checkpoint_all.add_argument("--generation-tail", type=int, default=20_000_000)
+    checkpoint_all.add_argument("--restore-instructions", type=int, default=40_000_000)
+    checkpoint_all.add_argument("--min-post-restore-overlap", type=float, default=0.5)
+    checkpoint_all.add_argument("--timeout", type=int, default=86_400)
+    checkpoint_all.add_argument(
+        "--include-rejected", action="store_true",
+        help="also materialize low-confidence or ambiguous best candidates",
+    )
+    checkpoint_all.add_argument(
+        "--plan-only", action="store_true",
+        help="write and print the all-checkpoint correspondence without running NEMU",
+    )
+    checkpoint_all.add_argument(
+        "--skip-validation", action="store_true",
+        help="generate target checkpoints without per-pair restore/profile validation",
+    )
+    checkpoint_all.add_argument(
+        "--resume", action="store_true",
+        help="reuse existing generated checkpoints and completed pair results",
+    )
+    checkpoint_all.set_defaults(func=command_checkpoint_all)
 
     report = subparsers.add_parser("report", help="summarize alignment and checkpoint results")
     report.add_argument("--suite", type=Path, required=True)

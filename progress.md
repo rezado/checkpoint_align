@@ -23,3 +23,7 @@
 - 重新执行 `mcf` checkpoint：target checkpoint 生成成功，source/target restore 均 NEMU good state，最低 post-restore overlap 为 0.9144，report 汇总 6 个 workload。
 - 修复新 manifest 的复制路径为 suite 相对路径，并保留旧绝对路径的存在性/本地回退；临时 suite 移动后 replay 结果保持一致。
 - 新增 `checkpoint-alignment-guide-zh.md`，统一说明代码结构、输入格式、四阶段命令、输出状态、六 workload/四组 checkpoint 结果以及 M1-M3 证据边界；根 README 已增加入口。
+- 用户澄清目标为 A 的全部 checkpoint 到 B 的对应关系。已确认 mcf A checkpoint 与 SimPoint 均为同一组 22 个点；开始实现批量映射、生成和断点续跑入口。
+- 新增 `map-checkpoints` 和 `checkpoint-all`：实际 source checkpoint 全覆盖检查、一次 NEMU 批量生成、逐对验证、`--include-rejected`、`--plan-only`、`--skip-validation` 和 `--resume`。
+- mcf 映射验证为 22/22，22 个唯一 B candidate、无碰撞；1 个推荐映射、21 个 ambiguous candidate。临时双点批量 generation 验证通过；总计 19 个测试通过。
+- `report` 已加入 checkpoint correspondence 与 batch 状态汇总；中文总文档和 README 已补充 mcf 全量命令、22 条映射及置信度解释。

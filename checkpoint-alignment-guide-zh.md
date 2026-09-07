@@ -17,13 +17,15 @@
 
 ### 2.1 通用工作流入口
 
-[`experiment/cross_elf_checkpoint.py`](experiment/cross_elf_checkpoint.py) 是日常使用的主入口，提供四个子命令：
+[`experiment/cross_elf_checkpoint.py`](experiment/cross_elf_checkpoint.py) 是日常使用的主入口，提供六个子命令：
 
 | 子命令 | 作用 | 是否运行 NEMU |
 |---|---|---:|
 | `prepare` | 发现或选择 workload，将两侧 profile 输入复制到一个自包含 suite | 否 |
 | `align` | 把 source SimPoint 映射到 target BBV interval 候选 | 否 |
 | `checkpoint` | 生成一个 target-native checkpoint，并对 source/target checkpoint 做有界 restore/profile | 是 |
+| `map-checkpoints` | 以 source 实际 checkpoint 为准，检查并输出完整 A→B candidate 清单 | 否 |
+| `checkpoint-all` | 批量生成 B checkpoint，并可逐对 restore/profile | 是 |
 | `report` | 汇总 suite 中已有的 alignment 和 checkpoint 结果 | 否 |
 
 主入口采用 manifest 驱动，不把 workload 名称和构建标签写死在代码中：
@@ -226,14 +228,89 @@ python3 experiment/cross_elf_checkpoint.py checkpoint \
 
 `--force` 不会提高 confidence，也不会把结果变为 production eligible。
 
-### 4.5 生成汇总报告
+### 4.5 映射 A 的所有实际 checkpoint
+
+先执行不带 `--points` 的完整 align，再建立全量对应表：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py align \
+  --suite /path/to/alignment-suite \
+  --workloads mcf
+
+python3 experiment/cross_elf_checkpoint.py map-checkpoints \
+  --suite /path/to/alignment-suite \
+  --workload mcf
+```
+
+`map-checkpoints` 不以 `simpoints0` 的声明数量作为完成依据，而是扫描 source profile 下实际存在的 `checkpoint/<workload>/<point>`。只要有一个实际 checkpoint 没有 alignment region，命令就失败并要求重新完整 align。成功后写入：
+
+```text
+results/<workload>/checkpoint-correspondence.json
+```
+
+该文件为每个 source checkpoint 记录 `target_point`、score、margin、alignment status、confidence 和 target collision。`all_source_checkpoints_mapped=true` 只表示每个 A checkpoint 都有 B best candidate，不表示每个 candidate 都可靠。
+
+### 4.6 批量生成 B checkpoint
+
+先只生成和检查全量计划，不运行 NEMU：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite /path/to/alignment-suite \
+  --workload mcf \
+  --plan-only
+```
+
+默认只生成通过 score/margin/单调性门槛的推荐映射：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite /path/to/alignment-suite \
+  --workload mcf
+```
+
+如果明确要求“每个 A checkpoint 都生成一个 B candidate checkpoint”，包括低置信度和模糊映射：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite /path/to/alignment-suite \
+  --workload mcf \
+  --include-rejected \
+  --timeout 86400
+```
+
+该命令把所有唯一 B point 合并到一次 NEMU generation 中，然后逐对执行 restore/profile。长任务中断后使用相同命令加 `--resume`：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite /path/to/alignment-suite \
+  --workload mcf \
+  --include-rejected \
+  --resume \
+  --timeout 86400
+```
+
+如果当前只需要生成全部 B checkpoint，暂不逐对 restore：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py checkpoint-all \
+  --suite /path/to/alignment-suite \
+  --workload mcf \
+  --include-rejected \
+  --skip-validation \
+  --timeout 86400
+```
+
+之后可去掉 `--skip-validation` 并加 `--resume`，复用已经生成的 B checkpoint，继续完成逐对验证。批量状态持续写入 `results/<workload>/checkpoint-all-result.json`。
+
+### 4.7 生成汇总报告
 
 ```sh
 python3 experiment/cross_elf_checkpoint.py report \
   --suite /path/to/alignment-suite
 ```
 
-### 4.6 使用全局 PositionAligner replay
+### 4.8 使用全局 PositionAligner replay
 
 ```sh
 python3 -m experiment.position_aligner replay \
@@ -265,6 +342,10 @@ python3 -m experiment.position_aligner replay \
     ├── suite-report.json
     └── <workload>/
         ├── alignment.json
+        ├── checkpoint-correspondence.json
+        ├── checkpoint-all-result.json
+        ├── checkpoint-all-target-cluster/
+        ├── checkpoint-all-target-generation/
         └── <source-side><source-point>-<target-side><target-point>/
             ├── checkpoint-result.json
             ├── target-cluster/
@@ -283,6 +364,8 @@ python3 -m experiment.position_aligner replay \
 | `rejected_non_monotonic` | 接受候选会破坏 source 到 target 的顺序关系 |
 | `validated_experimental` | checkpoint 生成、结构检查、两侧有界 restore 和 BBV overlap 门槛通过 |
 | `rejected_post_restore_divergence` | checkpoint 可运行，但 restore 后至少一个 BBV 窗口低于阈值 |
+| `materialized_unvalidated` | B checkpoint 已生成并通过压缩检查，但按要求跳过了逐对 restore |
+| `validation_failed` | B checkpoint 已生成，但该对 restore/profile 执行失败 |
 
 `validated_experimental` 不是 workload 完整运行成功，也不是源代码语义等价证明。结果中仍保留：
 
@@ -342,7 +425,38 @@ python3 -m experiment.position_aligner replay \
 
 `mcf` 数据是 2026-09-07 重新运行后的当前值；其 target checkpoint SHA-256 为 `48d7476d9c10fdefe110e61998347e21154a0b0f7e4920b38c84590c4c9374f6`。生成日志记录 checkpoint instruction 为 9，本文只记录工具实际输出，不把该数字解释为 source/target 语义位置相同。
 
-### 6.4 全局 PositionAligner M1 replay
+### 6.4 mcf 全 checkpoint 对应表
+
+当前 mcf A 侧有 22 个实际 checkpoint，点集合与 A `simpoints0` 完全一致。`map-checkpoints` 已为 22/22 个 A checkpoint 找到 B best candidate，且 22 个 target point 没有碰撞：
+
+| A checkpoint | B candidate | 状态 |
+|---:|---:|---|
+| 1 | 1 | `accepted_experimental` |
+| 857 | 835 | `rejected_ambiguous` |
+| 1412 | 1383 | `rejected_ambiguous` |
+| 1822 | 1782 | `rejected_ambiguous` |
+| 3414 | 3350 | `rejected_ambiguous` |
+| 4240 | 4158 | `rejected_ambiguous` |
+| 4604 | 4501 | `rejected_ambiguous` |
+| 4622 | 4526 | `rejected_ambiguous` |
+| 5624 | 5509 | `rejected_ambiguous` |
+| 6046 | 5911 | `rejected_ambiguous` |
+| 6329 | 6190 | `rejected_ambiguous` |
+| 7853 | 7686 | `rejected_ambiguous` |
+| 7962 | 7788 | `rejected_ambiguous` |
+| 8176 | 8005 | `rejected_ambiguous` |
+| 8937 | 8758 | `rejected_ambiguous` |
+| 9283 | 9090 | `rejected_ambiguous` |
+| 9469 | 9272 | `rejected_ambiguous` |
+| 10755 | 10527 | `rejected_ambiguous` |
+| 11317 | 11080 | `rejected_ambiguous` |
+| 12731 | 12458 | `rejected_ambiguous` |
+| 13935 | 13644 | `rejected_ambiguous` |
+| 14001 | 13715 | `rejected_ambiguous` |
+
+因此当前证据是“22 个 A checkpoint 都有 B candidate position”，不是“22 个映射都已可靠验证”。只有 A1→B1 通过当前 alignment gate 并完成 checkpoint restore 验证；其余 21 个必须使用 `--include-rejected` 才会 materialize，且会保留 `R` confidence/ambiguous 状态。
+
+### 6.5 全局 PositionAligner M1 replay
 
 独立的稀疏全局 BBV replay 同样处理 209 个 source point：
 
@@ -358,7 +472,7 @@ python3 -m experiment.position_aligner replay \
 
 由于每个 workload 都仍包含被拒绝位置，workload 级总体状态为 `rejected/AMBIGUOUS`。位置级的 62 个 match 仍只有 confidence `L`，`production_eligible=false`。
 
-### 6.5 DWARF/occurrence 阶段
+### 6.6 DWARF/occurrence 阶段
 
 当前静态 catalog 已覆盖：
 
@@ -415,12 +529,13 @@ python3 -m py_compile \
   experiment/position_aligner/__main__.py
 
 python3 -m unittest \
+  experiment.test_cross_elf_checkpoint \
   experiment.position_aligner.test_bbv \
   experiment.test_dwarf_source \
   experiment.m3.test_review_shifted_candidates
 ```
 
-当前结果为 17 个测试通过。
+当前结果为 19 个测试通过。
 
 仓库使用本地 `main` 分支管理源码。以下内容被 `.gitignore` 排除：
 
