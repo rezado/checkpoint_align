@@ -426,7 +426,9 @@ def command_checkpoint(args: argparse.Namespace) -> None:
     alignment = read_json(suite / "results" / args.workload / "alignment.json")
     matches = [r for r in alignment["regions"] if r["source_point_a"] == args.source_point]
     if len(matches) != 1:
-        raise RuntimeError(f"alignment does not contain {args.workload} A point {args.source_point}")
+        raise RuntimeError(
+            f"alignment does not contain {args.workload} {source_side} point {args.source_point}"
+        )
     region = matches[0]
     if region["status"] != "accepted_experimental" and not args.force:
         raise RuntimeError(f"refusing checkpoint for {region['status']}; use --force only for diagnosis")
