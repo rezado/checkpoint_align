@@ -1,0 +1,1158 @@
+{
+  "baseline_inputs": {
+    "gcpt": {
+      "path": "experiment/lbm/tools/gcpt.bin",
+      "present": true,
+      "sha256": "c47750dd7acc93a664bbcd35278633d510c6ce785d63d7fca22dce00cbd8b2b6",
+      "size": 1048600
+    },
+    "nemu": {
+      "path": "experiment/lbm/tools/riscv64-nemu-interpreter",
+      "present": true,
+      "sha256": "bbfb15b23d19e34895acab1f61e864dd9f24951f2425357090d854882fde0a42",
+      "size": 488784
+    },
+    "source": {
+      "elf": {
+        "path": "experiment/lbm/A/elf/lbm.elf",
+        "present": true,
+        "sha256": "5e34c69ba91ae293d32900d1b40172fbc2198dc2d813e025f226438042b7071f",
+        "size": 734792
+      },
+      "firmware": {
+        "path": "experiment/lbm/A/bin/lbm.fw_payload.bin",
+        "present": true,
+        "sha256": "5167e5355b67ea7e806e2702c283afbc666e8b65fba1cedbe43aea5f52d228f7",
+        "size": 27215360
+      },
+      "json": {
+        "path": "experiment/lbm/A/json/lbm.json",
+        "present": true,
+        "sha256": "0f364437a12332f25c76b90789ee535d3dbac46e78b620c48096d869f0e3767a",
+        "size": 793
+      },
+      "profile": {
+        "path": "experiment/lbm/A/profiling/simpoint_bbv.gz",
+        "present": true,
+        "sha256": "18041aee277545a440453aaef6e2572f03f47e5cd106ee5706cee7965b5cf9e7",
+        "size": 798724
+      },
+      "run_script": {
+        "path": "experiment/lbm/A/cmd/lbm.run.sh",
+        "present": true,
+        "sha256": "39cca0d690d82e67fd8b95ef81a1ce4643fa8ad5eb2a322387f84e6ba937bd18",
+        "size": 333
+      },
+      "simpoints": {
+        "path": "experiment/lbm/A/cluster/simpoints0",
+        "present": true,
+        "sha256": "4ce29fb34a34bb9d59a0416368ef35465f5243d3ce007dd988ea4153926c68e4",
+        "size": 188
+      },
+      "weights": {
+        "path": "experiment/lbm/A/cluster/weights0",
+        "present": true,
+        "sha256": "b1833c7a65054697649c4c357ebb14d1a8af8d859a61e6471f05febf7de19daa",
+        "size": 313
+      }
+    },
+    "target": {
+      "elf": {
+        "path": "experiment/lbm/B/elf/lbm.elf",
+        "present": true,
+        "sha256": "fd853548c6df9ce24110fa1dc050bcb8a10a8deae7e87f08b65fbf1dff0bab45",
+        "size": 735168
+      },
+      "firmware": {
+        "path": "experiment/lbm/B/bin/lbm.fw_payload.bin",
+        "present": true,
+        "sha256": "78e261b68c4c715698507bce1f6b615cd8d94ccb9b6636cdcabc41488c5bbab3",
+        "size": 27215872
+      },
+      "json": {
+        "path": "experiment/lbm/B/json/lbm.json",
+        "present": true,
+        "sha256": "be918ba3fb6428ce711e7d5212e3a1646a65e2514173ee6380c4db43eecef53a",
+        "size": 583
+      },
+      "profile": {
+        "path": "experiment/lbm/B/profiling/simpoint_bbv.gz",
+        "present": true,
+        "sha256": "2348f55f3810d6275b0dcf4d8fbe44f3c4cb36c790fe4f8959be5196a431415d",
+        "size": 796126
+      },
+      "run_script": {
+        "path": "experiment/lbm/B/cmd/lbm.run.sh",
+        "present": true,
+        "sha256": "39cca0d690d82e67fd8b95ef81a1ce4643fa8ad5eb2a322387f84e6ba937bd18",
+        "size": 333
+      },
+      "simpoints": {
+        "path": "experiment/lbm/B/cluster/simpoints0",
+        "present": true,
+        "sha256": "a8f90f04a7466a6af66bddc7790fc33b248661ea04a45041c2d0d93f7084f8f1",
+        "size": 109
+      },
+      "weights": {
+        "path": "experiment/lbm/B/cluster/weights0",
+        "present": true,
+        "sha256": "c5609b7283df3b0f0010dbf239b83ea0eb9cf708165bcc056b261813f7c06224",
+        "size": 189
+      }
+    }
+  },
+  "cross_copy_equivalence": {
+    "gcpt": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/tools/gcpt.bin",
+        "present": true,
+        "sha256": "c47750dd7acc93a664bbcd35278633d510c6ce785d63d7fca22dce00cbd8b2b6",
+        "size": 1048600
+      },
+      "right": {
+        "path": "experiment/multi-workload/tools/gcpt.bin",
+        "present": true,
+        "sha256": "c47750dd7acc93a664bbcd35278633d510c6ce785d63d7fca22dce00cbd8b2b6",
+        "size": 1048600
+      }
+    },
+    "nemu": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/tools/riscv64-nemu-interpreter",
+        "present": true,
+        "sha256": "bbfb15b23d19e34895acab1f61e864dd9f24951f2425357090d854882fde0a42",
+        "size": 488784
+      },
+      "right": {
+        "path": "experiment/multi-workload/tools/riscv64-nemu-interpreter",
+        "present": true,
+        "sha256": "bbfb15b23d19e34895acab1f61e864dd9f24951f2425357090d854882fde0a42",
+        "size": 488784
+      }
+    },
+    "source_checkpoint": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/A/checkpoint/20/_20_0.000069_memory_.zstd",
+        "present": true,
+        "sha256": "3c7756fd869be340bbb316d74457a22232008bcb8f1242e3fd93d8424439cb87",
+        "size": 11710521
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/A/checkpoint/20/_20_0.000069_memory_.zstd",
+        "present": true,
+        "sha256": "3c7756fd869be340bbb316d74457a22232008bcb8f1242e3fd93d8424439cb87",
+        "size": 11710521
+      }
+    },
+    "target_elf": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/elf/lbm.elf",
+        "present": true,
+        "sha256": "fd853548c6df9ce24110fa1dc050bcb8a10a8deae7e87f08b65fbf1dff0bab45",
+        "size": 735168
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/elf/lbm.elf",
+        "present": true,
+        "sha256": "fd853548c6df9ce24110fa1dc050bcb8a10a8deae7e87f08b65fbf1dff0bab45",
+        "size": 735168
+      }
+    },
+    "target_firmware": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/bin/lbm.fw_payload.bin",
+        "present": true,
+        "sha256": "78e261b68c4c715698507bce1f6b615cd8d94ccb9b6636cdcabc41488c5bbab3",
+        "size": 27215872
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/bin/lbm.fw_payload.bin",
+        "present": true,
+        "sha256": "78e261b68c4c715698507bce1f6b615cd8d94ccb9b6636cdcabc41488c5bbab3",
+        "size": 27215872
+      }
+    },
+    "target_json": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/json/lbm.json",
+        "present": true,
+        "sha256": "be918ba3fb6428ce711e7d5212e3a1646a65e2514173ee6380c4db43eecef53a",
+        "size": 583
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/json/lbm.json",
+        "present": true,
+        "sha256": "be918ba3fb6428ce711e7d5212e3a1646a65e2514173ee6380c4db43eecef53a",
+        "size": 583
+      }
+    },
+    "target_profile": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/profiling/simpoint_bbv.gz",
+        "present": true,
+        "sha256": "2348f55f3810d6275b0dcf4d8fbe44f3c4cb36c790fe4f8959be5196a431415d",
+        "size": 796126
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/profiling/simpoint_bbv.gz",
+        "present": true,
+        "sha256": "2348f55f3810d6275b0dcf4d8fbe44f3c4cb36c790fe4f8959be5196a431415d",
+        "size": 796126
+      }
+    },
+    "target_run_script": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/cmd/lbm.run.sh",
+        "present": true,
+        "sha256": "39cca0d690d82e67fd8b95ef81a1ce4643fa8ad5eb2a322387f84e6ba937bd18",
+        "size": 333
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/cmd/lbm.run.sh",
+        "present": true,
+        "sha256": "39cca0d690d82e67fd8b95ef81a1ce4643fa8ad5eb2a322387f84e6ba937bd18",
+        "size": 333
+      }
+    },
+    "target_simpoints": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/cluster/simpoints0",
+        "present": true,
+        "sha256": "a8f90f04a7466a6af66bddc7790fc33b248661ea04a45041c2d0d93f7084f8f1",
+        "size": 109
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/cluster/simpoints0",
+        "present": true,
+        "sha256": "a8f90f04a7466a6af66bddc7790fc33b248661ea04a45041c2d0d93f7084f8f1",
+        "size": 109
+      }
+    },
+    "target_weights": {
+      "byte_identical": true,
+      "left": {
+        "path": "experiment/lbm/B/cluster/weights0",
+        "present": true,
+        "sha256": "c5609b7283df3b0f0010dbf239b83ea0eb9cf708165bcc056b261813f7c06224",
+        "size": 189
+      },
+      "right": {
+        "path": "experiment/multi-workload/workloads/lbm/B/cluster/weights0",
+        "present": true,
+        "sha256": "c5609b7283df3b0f0010dbf239b83ea0eb9cf708165bcc056b261813f7c06224",
+        "size": 189
+      }
+    }
+  },
+  "evidence_kind": "m0-lbm-a20-repeatability",
+  "interpretation": {
+    "calibration_eligible": false,
+    "checkpoint_restore_proven": true,
+    "notes": [
+      "The profile and checkpoint hashes are provenance, not semantic correspondence labels.",
+      "The old and generic runs use the same 20M interval and target cluster bytes; their -I caps differ (540M versus 580M), which changes only the post-trigger stopping point.",
+      "No run records a terminal HIT GOOD TRAP after restore; keep this evidence experimental until seed control and semantic markers are added."
+    ],
+    "terminal_completion_proven": false,
+    "weights_in_alignment_semantics": false
+  },
+  "interval_contract": {
+    "event_phase": "before_instruction",
+    "icount_domain": "workload_relative_instructions",
+    "interval_index_base": 0,
+    "interval_instructions": 20000000,
+    "note": "Existing NEMU checkpoint logs expose trigger overshoot but not a source marker; this report records the observed simulator trigger semantics separately.",
+    "observed_trigger_domain": "profiling-relative workload instructions"
+  },
+  "primary_comparison": {
+    "generic_run_id": "generic-suite-lbm-A20-B20",
+    "generic_second_window_overlap": 0.9845559845559846,
+    "legacy_run_id": "legacy-final",
+    "legacy_second_window_overlap": 0.015444015444015444,
+    "saved_pc_equal": false,
+    "target_checkpoint_sha_equal": false,
+    "target_post_profile_sha_equal": false,
+    "trigger_icount_equal": false
+  },
+  "repeatability_summary": {
+    "all_generation_runs_have_rng_seed_marker": true,
+    "gate_reason": "same target bytes and command family still produced different trigger/PC/checkpoint bytes; seed bytes were not recorded",
+    "generation_runs": 4,
+    "repeatability_gate": "not_met",
+    "runs_with_checkpoint": 4,
+    "unique_checkpoint_shas": [
+      "858a4102689fbfd9fab20091893e7751ccb92d1188a255559479f0df3ad75ad3",
+      "cab5de4c5279fc7229f1d5ca02e0dfd46711332d9f8b0a5244e1efa22c17e28a",
+      "e8922837ff7ca6bb030249eaeec42d2f45784c82a17e1a2d2174095f26720fed",
+      "f8897ac0b9fcabe3d4fb8be2ce953eb7404256b2bf0a31262d8e9099f8a64272"
+    ],
+    "unique_saved_pcs": [
+      "0x11ac6",
+      "0x1312c",
+      "0x13134"
+    ],
+    "unique_trigger_values": [
+      380000000,
+      380000002,
+      380000005
+    ]
+  },
+  "rng_seed_hypothesis": {
+    "all_runs_observed_marker": true,
+    "classification": "leading_hypothesis_not_proven_unique",
+    "observed_log_marker": "Patched FDT /chosen with rng-seed",
+    "reasoning": "The matching NEMU source reads 32 bytes from /dev/urandom when the DTB lacks rng-seed, then inserts the property. The saved logs do not include the bytes, so the artifacts establish an uncontrolled entropy input and correlation, not exclusivity of causation.",
+    "source_implementation": {
+      "call_site_lines": [
+        302,
+        316
+      ],
+      "insert_lines": [
+        266,
+        299
+      ],
+      "path": "/nfs/home/wujiabin/work/260820_NEMU_paper/NEMU/src/monitor/fdt_rng_seed.c",
+      "present": true,
+      "read_host_random_device": "/dev/urandom",
+      "read_host_random_lines": [
+        243,
+        263
+      ],
+      "seed_size_bytes": 32,
+      "sha256": "88c53537bf4566c818ae8d249dfe201630670c613958557ffd2fcbe067abeb15"
+    }
+  },
+  "runs": [
+    {
+      "checkpoint": {
+        "path": "experiment/lbm/rerun-20260828-125428/aligned-point20/lbm/20/_20_1.000000_memory_.zstd",
+        "present": true,
+        "sha256": "e8922837ff7ca6bb030249eaeec42d2f45784c82a17e1a2d2174095f26720fed",
+        "size": 11725684
+      },
+      "driver_command": "./experiment/lbm/reproduce.sh",
+      "family": "legacy_reproduce_sh",
+      "generation": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": true,
+        "checkpoint_notify_observed": [
+          380000005
+        ],
+        "checkpoint_trigger_observed": [
+          380000005
+        ],
+        "evidence_lines": {
+          "checkpoint_notify_observed": 112,
+          "checkpoint_trigger_observed": 33,
+          "guest_instructions": 117,
+          "nemu_good_state": 120,
+          "rng_seed_patched": 17,
+          "saved_pc": 115,
+          "start_profiling_base": 26
+        },
+        "guest_instructions": 540000432,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/rerun-20260828-125428/generate.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": "0x1312c",
+        "simpoint": 20,
+        "start_profiling_base": 119555201,
+        "stderr_log": {
+          "build_time": null,
+          "checkpoint_done": false,
+          "checkpoint_notify_observed": [],
+          "checkpoint_trigger_observed": [],
+          "evidence_lines": {
+            "checkpoint_notify_observed": null,
+            "checkpoint_trigger_observed": null,
+            "guest_instructions": null,
+            "nemu_good_state": null,
+            "rng_seed_patched": null,
+            "saved_pc": null,
+            "start_profiling_base": null
+          },
+          "guest_instructions": null,
+          "hit_good_trap": false,
+          "kernel_crng_initialized": true,
+          "log": "experiment/lbm/rerun-20260828-125428/generate.err.log",
+          "nemu_good_state": false,
+          "rng_seed_patched": false,
+          "saved_pc": null,
+          "simpoint": null,
+          "start_profiling_base": null,
+          "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+          "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+        },
+        "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+        "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+      },
+      "generation_command": "timeout 120s experiment/lbm/tools/riscv64-nemu-interpreter experiment/lbm/B/bin/lbm.fw_payload.bin -D experiment/lbm/rerun-20260828-125428 -w lbm -C aligned-point20 -b -I 540000000 -S experiment/lbm/B-aligned-cluster --cpt-interval 20000000 --warmup-interval 20000000 --checkpoint-format zstd > experiment/lbm/rerun-20260828-125428/generate.out.log 2> experiment/lbm/rerun-20260828-125428/generate.err.log",
+      "log_artifacts": {
+        "generation_stderr": {
+          "path": "experiment/lbm/rerun-20260828-125428/generate.err.log",
+          "present": true,
+          "sha256": "5e4c5e47b9746424f5167f195f8c8be9e6b89a5f55a367e2af68cf6338f9142d",
+          "size": 11096
+        },
+        "generation_stdout": {
+          "path": "experiment/lbm/rerun-20260828-125428/generate.out.log",
+          "present": true,
+          "sha256": "b3cb5b6bd5ec167405c605f780ec1f79492080fceb50e00aee4b1bb0ce9a8660",
+          "size": 11075
+        },
+        "target_restore_stderr": {
+          "path": "experiment/lbm/rerun-20260828-125428/restore.err.log",
+          "present": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "target_restore_stdout": {
+          "path": "experiment/lbm/rerun-20260828-125428/restore.out.log",
+          "present": true,
+          "sha256": "d9f345b3e7d11153968ba7f6486e18f48e777dc3f562f39997931f27f824a05e",
+          "size": 2452
+        }
+      },
+      "profiles": {},
+      "restore_commands": {
+        "target": "timeout 60s experiment/lbm/tools/riscv64-nemu-interpreter -b -I 40000000 --cpt-restorer experiment/lbm/tools/gcpt.bin experiment/lbm/rerun-20260828-125428/aligned-point20/lbm/20/_20_1.000000_memory_.zstd > experiment/lbm/legacy-rerun-20260828-125428/restore.out.log 2> experiment/lbm/legacy-rerun-20260828-125428/restore.err.log"
+      },
+      "result_json": null,
+      "run_id": "legacy-rerun-20260828-125428",
+      "source_restore": null,
+      "target_restore": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": false,
+        "checkpoint_notify_observed": [],
+        "checkpoint_trigger_observed": [],
+        "evidence_lines": {
+          "checkpoint_notify_observed": null,
+          "checkpoint_trigger_observed": null,
+          "guest_instructions": 21,
+          "nemu_good_state": 24,
+          "rng_seed_patched": 15,
+          "saved_pc": null,
+          "start_profiling_base": null
+        },
+        "guest_instructions": 40000000,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/rerun-20260828-125428/restore.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": null,
+        "simpoint": null,
+        "start_profiling_base": null,
+        "workload_command": null,
+        "workload_md5": null
+      }
+    },
+    {
+      "checkpoint": {
+        "path": "experiment/lbm/rerun-20260828-125533/aligned-point20/lbm/20/_20_1.000000_memory_.zstd",
+        "present": true,
+        "sha256": "cab5de4c5279fc7229f1d5ca02e0dfd46711332d9f8b0a5244e1efa22c17e28a",
+        "size": 11879520
+      },
+      "driver_command": "./experiment/lbm/reproduce.sh",
+      "family": "legacy_reproduce_sh",
+      "generation": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": true,
+        "checkpoint_notify_observed": [
+          380000000
+        ],
+        "checkpoint_trigger_observed": [
+          380000000
+        ],
+        "evidence_lines": {
+          "checkpoint_notify_observed": 109,
+          "checkpoint_trigger_observed": 30,
+          "guest_instructions": 114,
+          "nemu_good_state": 117,
+          "rng_seed_patched": 17,
+          "saved_pc": 112,
+          "start_profiling_base": 26
+        },
+        "guest_instructions": 540000452,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/rerun-20260828-125533/generate.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": "0x13134",
+        "simpoint": 20,
+        "start_profiling_base": 119548301,
+        "stderr_log": {
+          "build_time": null,
+          "checkpoint_done": false,
+          "checkpoint_notify_observed": [],
+          "checkpoint_trigger_observed": [],
+          "evidence_lines": {
+            "checkpoint_notify_observed": null,
+            "checkpoint_trigger_observed": null,
+            "guest_instructions": null,
+            "nemu_good_state": null,
+            "rng_seed_patched": null,
+            "saved_pc": null,
+            "start_profiling_base": null
+          },
+          "guest_instructions": null,
+          "hit_good_trap": false,
+          "kernel_crng_initialized": true,
+          "log": "experiment/lbm/rerun-20260828-125533/generate.err.log",
+          "nemu_good_state": false,
+          "rng_seed_patched": false,
+          "saved_pc": null,
+          "simpoint": null,
+          "start_profiling_base": null,
+          "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+          "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+        },
+        "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+        "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+      },
+      "generation_command": "timeout 120s experiment/lbm/tools/riscv64-nemu-interpreter experiment/lbm/B/bin/lbm.fw_payload.bin -D experiment/lbm/rerun-20260828-125533 -w lbm -C aligned-point20 -b -I 540000000 -S experiment/lbm/B-aligned-cluster --cpt-interval 20000000 --warmup-interval 20000000 --checkpoint-format zstd > experiment/lbm/rerun-20260828-125533/generate.out.log 2> experiment/lbm/rerun-20260828-125533/generate.err.log",
+      "log_artifacts": {
+        "generation_stderr": {
+          "path": "experiment/lbm/rerun-20260828-125533/generate.err.log",
+          "present": true,
+          "sha256": "ce1b4779d7e7e36026a1ed7f9172f0e5bb03d8240484278868575474d0c47f0a",
+          "size": 11096
+        },
+        "generation_stdout": {
+          "path": "experiment/lbm/rerun-20260828-125533/generate.out.log",
+          "present": true,
+          "sha256": "8e4de6dd55dc29dd9ef4b15e4cc9a3ba47f1456c3bad2ecaff384874a88e8d51",
+          "size": 10764
+        },
+        "target_restore_stderr": {
+          "path": "experiment/lbm/rerun-20260828-125533/restore.err.log",
+          "present": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "target_restore_stdout": {
+          "path": "experiment/lbm/rerun-20260828-125533/restore.out.log",
+          "present": true,
+          "sha256": "79a07d84ac070c23926083c26aa8a035ff36af56558abae12c283a1a8f14b717",
+          "size": 2452
+        }
+      },
+      "profiles": {},
+      "restore_commands": {
+        "target": "timeout 60s experiment/lbm/tools/riscv64-nemu-interpreter -b -I 40000000 --cpt-restorer experiment/lbm/tools/gcpt.bin experiment/lbm/rerun-20260828-125533/aligned-point20/lbm/20/_20_1.000000_memory_.zstd > experiment/lbm/legacy-rerun-20260828-125533/restore.out.log 2> experiment/lbm/legacy-rerun-20260828-125533/restore.err.log"
+      },
+      "result_json": null,
+      "run_id": "legacy-rerun-20260828-125533",
+      "source_restore": null,
+      "target_restore": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": false,
+        "checkpoint_notify_observed": [],
+        "checkpoint_trigger_observed": [],
+        "evidence_lines": {
+          "checkpoint_notify_observed": null,
+          "checkpoint_trigger_observed": null,
+          "guest_instructions": 21,
+          "nemu_good_state": 24,
+          "rng_seed_patched": 15,
+          "saved_pc": null,
+          "start_profiling_base": null
+        },
+        "guest_instructions": 40000008,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/rerun-20260828-125533/restore.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": null,
+        "simpoint": null,
+        "start_profiling_base": null,
+        "workload_command": null,
+        "workload_md5": null
+      }
+    },
+    {
+      "checkpoint": {
+        "path": "experiment/lbm/generated-B-point20-final/aligned-point20/lbm/20/_20_1.000000_memory_.zstd",
+        "present": true,
+        "sha256": "f8897ac0b9fcabe3d4fb8be2ce953eb7404256b2bf0a31262d8e9099f8a64272",
+        "size": 11868359
+      },
+      "driver_command": "manual command recorded in the M0 provenance (see generation/restore commands)",
+      "family": "legacy_manual",
+      "generation": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": true,
+        "checkpoint_notify_observed": [
+          380000002
+        ],
+        "checkpoint_trigger_observed": [
+          380000002
+        ],
+        "evidence_lines": {
+          "checkpoint_notify_observed": 110,
+          "checkpoint_trigger_observed": 31,
+          "guest_instructions": 115,
+          "nemu_good_state": 118,
+          "rng_seed_patched": 17,
+          "saved_pc": 113,
+          "start_profiling_base": 26
+        },
+        "guest_instructions": 540000460,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/restore-logs/B-point20-generate-final.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": "0x13134",
+        "simpoint": 20,
+        "start_profiling_base": 119541067,
+        "stderr_log": {
+          "build_time": null,
+          "checkpoint_done": false,
+          "checkpoint_notify_observed": [],
+          "checkpoint_trigger_observed": [],
+          "evidence_lines": {
+            "checkpoint_notify_observed": null,
+            "checkpoint_trigger_observed": null,
+            "guest_instructions": null,
+            "nemu_good_state": null,
+            "rng_seed_patched": null,
+            "saved_pc": null,
+            "start_profiling_base": null
+          },
+          "guest_instructions": null,
+          "hit_good_trap": false,
+          "kernel_crng_initialized": true,
+          "log": "experiment/lbm/restore-logs/B-point20-generate-final.err.log",
+          "nemu_good_state": false,
+          "rng_seed_patched": false,
+          "saved_pc": null,
+          "simpoint": null,
+          "start_profiling_base": null,
+          "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+          "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+        },
+        "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+        "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+      },
+      "generation_command": "/usr/bin/time -f 'wall=%e exit=%x' timeout 120s stdbuf -oL -eL /nfs/home/wujiabin/work/260820_NEMU_paper/NEMU/build/riscv64-nemu-interpreter experiment/lbm/B/bin/lbm.fw_payload.bin -D experiment/lbm/generated-B-point20-final -w lbm -C aligned-point20 -b -I 540000000 -S experiment/lbm/B-aligned-cluster --cpt-interval 20000000 --warmup-interval 20000000 --checkpoint-format zstd",
+      "log_artifacts": {
+        "generation_stderr": {
+          "path": "experiment/lbm/restore-logs/B-point20-generate-final.err.log",
+          "present": true,
+          "sha256": "9ef4cf552f58460b1802705003df6f1972473bd2d14e6a0b1d78d504f2722800",
+          "size": 11114
+        },
+        "generation_stdout": {
+          "path": "experiment/lbm/restore-logs/B-point20-generate-final.out.log",
+          "present": true,
+          "sha256": "a8d1642749394001365f01013c1c44959000332f86e2a6183f23e0cc671598de",
+          "size": 10712
+        },
+        "source_restore_stderr": {
+          "path": "experiment/lbm/restore-logs/A-point20-post-profile.err.log",
+          "present": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "source_restore_stdout": {
+          "path": "experiment/lbm/restore-logs/A-point20-post-profile.out.log",
+          "present": true,
+          "sha256": "a0e52e958724034079b568154b8f9ec91d9d5126812203f67d2d534b183ac78e",
+          "size": 2808
+        },
+        "target_restore_stderr": {
+          "path": "experiment/lbm/restore-logs/B-point20-post-profile.err.log",
+          "present": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "target_restore_stdout": {
+          "path": "experiment/lbm/restore-logs/B-point20-post-profile.out.log",
+          "present": true,
+          "sha256": "25ad5e7c8e2bfda64d93d0a5d0b84dd77f145b7d75b4bd8eeb032b8094c0051a",
+          "size": 2874
+        }
+      },
+      "profiles": {
+        "comparison": {
+          "minimum_overlap": 0.015444015444015444,
+          "source_profile": "experiment/lbm/post-restore-profile-A/post-restore/lbm/simpoint_bbv.gz",
+          "target_profile": "experiment/lbm/post-restore-profile-B/post-restore/lbm/simpoint_bbv.gz",
+          "windows": [
+            {
+              "count_multiset_overlap": 0.7959542656112577,
+              "source_nonzero_blocks": 1137,
+              "source_vector_sum": 20000006,
+              "target_nonzero_blocks": 1137,
+              "target_vector_sum": 20000004,
+              "window": 0
+            },
+            {
+              "count_multiset_overlap": 0.015444015444015444,
+              "source_nonzero_blocks": 259,
+              "source_vector_sum": 19999994,
+              "target_nonzero_blocks": 259,
+              "target_vector_sum": 19999999,
+              "window": 1
+            }
+          ]
+        },
+        "source": {
+          "path": "experiment/lbm/post-restore-profile-A/post-restore/lbm/simpoint_bbv.gz",
+          "row_nonzero_blocks": [
+            1137,
+            259
+          ],
+          "row_vector_sums": [
+            20000006,
+            19999994
+          ],
+          "rows": 2,
+          "sha256": "20ae6192c45cdbf40c58e6888ff3625ad8dd55eda3da84d58b21f81df29db136",
+          "size": 4139,
+          "vector_instruction_sum": 40000000
+        },
+        "target": {
+          "path": "experiment/lbm/post-restore-profile-B/post-restore/lbm/simpoint_bbv.gz",
+          "row_nonzero_blocks": [
+            1137,
+            259
+          ],
+          "row_vector_sums": [
+            20000004,
+            19999999
+          ],
+          "rows": 2,
+          "sha256": "31a35aab6c86c61dabd23bab96efc0925426e817fdccd76300873ea71d4c67f4",
+          "size": 3595,
+          "vector_instruction_sum": 40000003
+        }
+      },
+      "restore_commands": {
+        "A": "timeout 60s stdbuf -oL -eL experiment/lbm/tools/riscv64-nemu-interpreter -b -I 40000000 --cpt-restorer experiment/lbm/tools/gcpt.bin --simpoint-profile --dont-skip-boot --cpt-interval 20000000 -D experiment/lbm/post-restore-profile-A -w lbm -C post-restore experiment/lbm/A/checkpoint/20/_20_0.000069_memory_.zstd",
+        "B": "timeout 60s stdbuf -oL -eL experiment/lbm/tools/riscv64-nemu-interpreter -b -I 40000000 --cpt-restorer experiment/lbm/tools/gcpt.bin --simpoint-profile --dont-skip-boot --cpt-interval 20000000 -D experiment/lbm/post-restore-profile-B -w lbm -C post-restore experiment/lbm/generated-B-point20-final/aligned-point20/lbm/20/_20_1.000000_memory_.zstd"
+      },
+      "result_json": {
+        "path": "experiment/lbm/experiment-result.json",
+        "present": true,
+        "sha256": "3e83185cf69e3f95968311bafbff1a3d07070f310b7af2e35d56c3d2290e8106",
+        "size": 2221
+      },
+      "result_values": {
+        "conclusion": "The B-native checkpoint is at the corresponding file-load call context and restores successfully. The following fixed-length windows drift, so this result is experimental and must not be used as a production-equivalent SimPoint region without occurrence-level anchors.",
+        "mapping_evidence": {
+          "bbv_count_multiset_overlap": 0.972972972972973,
+          "confidence": "L",
+          "confidence_reason": "Dynamic BBV and static call context agree, but no source/IR occurrence trace was captured.",
+          "neighbor_order_is_monotonic": true,
+          "ratio_floor_candidate": 19,
+          "ratio_floor_candidate_status": "rejected_as_rounding_artifact",
+          "runner_up_overlap": 0.007162041181736795,
+          "runner_up_point": 19,
+          "selected_target_point": 20,
+          "static_call_context_matches": true
+        },
+        "production_eligible": false,
+        "source": {
+          "anchor": "LBM_loadObstacleFile getc return",
+          "build": "spec06_gcc16_rv64gcb_260724",
+          "checkpoint": "A/checkpoint/20/_20_0.000069_memory_.zstd",
+          "checkpoint_sha256": "3c7756fd869be340bbb316d74457a22232008bcb8f1242e3fd93d8424439cb87",
+          "checkpoint_workload_icount": 380000002,
+          "point": 20,
+          "saved_pc": "0x11ac4",
+          "saved_ra": "0x11ac4"
+        },
+        "status": "experimental_boundary_alignment_succeeded",
+        "target": {
+          "anchor": "_IO_getc called from LBM_loadObstacleFile",
+          "build": "spec06_gcc16_rva23_novec_260726",
+          "checkpoint": "generated-B-point20-final/aligned-point20/lbm/20/_20_1.000000_memory_.zstd",
+          "checkpoint_sha256": "f8897ac0b9fcabe3d4fb8be2ce953eb7404256b2bf0a31262d8e9099f8a64272",
+          "checkpoint_workload_icount": 380000002,
+          "point": 20,
+          "saved_pc": "0x13134",
+          "saved_ra": "0x11acc"
+        },
+        "verification": {
+          "generation_exit_code": 0,
+          "post_restore_20m_window_overlap": [
+            0.7959542656112577,
+            0.015444015444015444
+          ],
+          "source_restore_exit_code": 0,
+          "source_restore_good_state": true,
+          "source_restore_instructions": 40000000,
+          "target_checkpoint_generated": true,
+          "target_restore_exit_code": 0,
+          "target_restore_good_state": true,
+          "target_restore_instructions": 40000003,
+          "workload_terminal_completion_after_restore": false
+        },
+        "workload": "lbm"
+      },
+      "run_id": "legacy-final",
+      "source_restore": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": false,
+        "checkpoint_notify_observed": [],
+        "checkpoint_trigger_observed": [],
+        "evidence_lines": {
+          "checkpoint_notify_observed": null,
+          "checkpoint_trigger_observed": null,
+          "guest_instructions": 28,
+          "nemu_good_state": 31,
+          "rng_seed_patched": 22,
+          "saved_pc": null,
+          "start_profiling_base": null
+        },
+        "guest_instructions": 40000000,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/restore-logs/A-point20-post-profile.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": null,
+        "simpoint": null,
+        "start_profiling_base": null,
+        "workload_command": null,
+        "workload_md5": null
+      },
+      "target_restore": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": false,
+        "checkpoint_notify_observed": [],
+        "checkpoint_trigger_observed": [],
+        "evidence_lines": {
+          "checkpoint_notify_observed": null,
+          "checkpoint_trigger_observed": null,
+          "guest_instructions": 28,
+          "nemu_good_state": 31,
+          "rng_seed_patched": 22,
+          "saved_pc": null,
+          "start_profiling_base": null
+        },
+        "guest_instructions": 40000003,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/lbm/restore-logs/B-point20-post-profile.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": null,
+        "simpoint": null,
+        "start_profiling_base": null,
+        "workload_command": null,
+        "workload_md5": null
+      }
+    },
+    {
+      "checkpoint": {
+        "path": "experiment/multi-workload/results/lbm/A20-B20/target-generation/aligned/lbm/20/_20_1.000000_memory_.zstd",
+        "present": true,
+        "sha256": "858a4102689fbfd9fab20091893e7751ccb92d1188a255559479f0df3ad75ad3",
+        "size": 11730678
+      },
+      "driver_command": "python3 experiment/cross_elf_checkpoint.py checkpoint --suite experiment/multi-workload --workload lbm --source-point 20 --timeout 240 > experiment/multi-workload/results/lbm/checkpoint-command.out.log 2> experiment/multi-workload/results/lbm/checkpoint-command.err.log",
+      "family": "cross_elf_checkpoint_cli",
+      "generation": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": true,
+        "checkpoint_notify_observed": [
+          380000000
+        ],
+        "checkpoint_trigger_observed": [
+          380000000
+        ],
+        "evidence_lines": {
+          "checkpoint_notify_observed": 107,
+          "checkpoint_trigger_observed": 28,
+          "guest_instructions": 112,
+          "nemu_good_state": 115,
+          "rng_seed_patched": 17,
+          "saved_pc": 110,
+          "start_profiling_base": 26
+        },
+        "guest_instructions": 580000485,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/multi-workload/results/lbm/A20-B20/logs/generate.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": "0x11ac6",
+        "simpoint": 20,
+        "start_profiling_base": 119460626,
+        "stderr_log": {
+          "build_time": null,
+          "checkpoint_done": false,
+          "checkpoint_notify_observed": [],
+          "checkpoint_trigger_observed": [],
+          "evidence_lines": {
+            "checkpoint_notify_observed": null,
+            "checkpoint_trigger_observed": null,
+            "guest_instructions": null,
+            "nemu_good_state": null,
+            "rng_seed_patched": null,
+            "saved_pc": null,
+            "start_profiling_base": null
+          },
+          "guest_instructions": null,
+          "hit_good_trap": false,
+          "kernel_crng_initialized": true,
+          "log": "experiment/multi-workload/results/lbm/A20-B20/logs/generate.err.log",
+          "nemu_good_state": false,
+          "rng_seed_patched": false,
+          "saved_pc": null,
+          "simpoint": null,
+          "start_profiling_base": null,
+          "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+          "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+        },
+        "workload_command": "./lbm 3000 reference.dat 0 0 100_100_130_ldc.of",
+        "workload_md5": "1157e82d935a87bd7e8a4b44899ad1c3"
+      },
+      "generation_command": "/nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/tools/riscv64-nemu-interpreter /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/workloads/lbm/B/bin/lbm.fw_payload.bin -D /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/results/lbm/A20-B20/target-generation -w lbm -C aligned -b -I 580000000 -S /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/results/lbm/A20-B20/target-cluster --cpt-interval 20000000 --warmup-interval 20000000 --checkpoint-format zstd",
+      "log_artifacts": {
+        "generation_stderr": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/logs/generate.err.log",
+          "present": true,
+          "sha256": "5e4c5e47b9746424f5167f195f8c8be9e6b89a5f55a367e2af68cf6338f9142d",
+          "size": 11096
+        },
+        "generation_stdout": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/logs/generate.out.log",
+          "present": true,
+          "sha256": "2f6ae825b1465cb4dc48564b6035487fb3dfdf96eeaab39400815ca7a778b418",
+          "size": 10644
+        },
+        "source_restore_stderr": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/source-restore/logs/restore.err.log",
+          "present": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "source_restore_stdout": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/source-restore/logs/restore.out.log",
+          "present": true,
+          "sha256": "efceb8498138f3f49d027ec7b3fd970d3225fcf88a99180439e2a441d674248d",
+          "size": 3116
+        },
+        "target_restore_stderr": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/target-restore/logs/restore.err.log",
+          "present": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "target_restore_stdout": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/target-restore/logs/restore.out.log",
+          "present": true,
+          "sha256": "b7e21bd8e56da91e3a1beaf2b0bf59ea4eac5e7980aed8f079e42fd4e377359e",
+          "size": 3162
+        }
+      },
+      "profiles": {
+        "comparison": {
+          "minimum_overlap": 0.7985927880386984,
+          "source_profile": "experiment/multi-workload/results/lbm/A20-B20/source-restore/profile/post-restore/lbm/simpoint_bbv.gz",
+          "target_profile": "experiment/multi-workload/results/lbm/A20-B20/target-restore/profile/post-restore/lbm/simpoint_bbv.gz",
+          "windows": [
+            {
+              "count_multiset_overlap": 0.7985927880386984,
+              "source_nonzero_blocks": 1137,
+              "source_vector_sum": 20000006,
+              "target_nonzero_blocks": 1137,
+              "target_vector_sum": 20000004,
+              "window": 0
+            },
+            {
+              "count_multiset_overlap": 0.9845559845559846,
+              "source_nonzero_blocks": 259,
+              "source_vector_sum": 19999994,
+              "target_nonzero_blocks": 259,
+              "target_vector_sum": 19999996,
+              "window": 1
+            }
+          ]
+        },
+        "source": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/source-restore/profile/post-restore/lbm/simpoint_bbv.gz",
+          "row_nonzero_blocks": [
+            1137,
+            259
+          ],
+          "row_vector_sums": [
+            20000006,
+            19999994
+          ],
+          "rows": 2,
+          "sha256": "20ae6192c45cdbf40c58e6888ff3625ad8dd55eda3da84d58b21f81df29db136",
+          "size": 4139,
+          "vector_instruction_sum": 40000000
+        },
+        "target": {
+          "path": "experiment/multi-workload/results/lbm/A20-B20/target-restore/profile/post-restore/lbm/simpoint_bbv.gz",
+          "row_nonzero_blocks": [
+            1137,
+            259
+          ],
+          "row_vector_sums": [
+            20000004,
+            19999996
+          ],
+          "rows": 2,
+          "sha256": "74763bf9773429adaf79204fb5d25887903b805ce88622391cbee7035ebfaefb",
+          "size": 4153,
+          "vector_instruction_sum": 40000000
+        }
+      },
+      "restore_commands": {
+        "A": "/nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/tools/riscv64-nemu-interpreter -b -I 40000000 --cpt-restorer /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/tools/gcpt.bin --simpoint-profile --dont-skip-boot --cpt-interval 20000000 -D /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/results/lbm/A20-B20/source-restore/profile -w lbm -C post-restore /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/workloads/lbm/A/checkpoint/20/_20_0.000069_memory_.zstd",
+        "B": "/nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/tools/riscv64-nemu-interpreter -b -I 40000000 --cpt-restorer /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/tools/gcpt.bin --simpoint-profile --dont-skip-boot --cpt-interval 20000000 -D /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/results/lbm/A20-B20/target-restore/profile -w lbm -C post-restore /nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/results/lbm/A20-B20/target-generation/aligned/lbm/20/_20_1.000000_memory_.zstd"
+      },
+      "result_json": {
+        "path": "experiment/multi-workload/results/lbm/A20-B20/checkpoint-result.json",
+        "present": true,
+        "sha256": "9ac2e6c9e1c27259affe471580778f4353517174f386cc54fe589869f4ef8f2d",
+        "size": 2171
+      },
+      "result_values": {
+        "alignment": {
+          "confidence": "L",
+          "context_overlap": 0.837271593219033,
+          "interval_overlap": 0.972972972972973,
+          "margin": 0.8851652025455101,
+          "score": 0.932262559046791
+        },
+        "bounded_restore_only": true,
+        "generation": {
+          "checkpoint_done": true,
+          "checkpoint_instruction": 380000000,
+          "guest_instructions": 580000485,
+          "hit_good_trap": false,
+          "nemu_good_state": true,
+          "return_code": 0
+        },
+        "minimum_post_restore_overlap": 0.7985927880386984,
+        "minimum_post_restore_overlap_threshold": 0.5,
+        "post_restore_windows": [
+          {
+            "count_multiset_overlap": 0.7985927880386984,
+            "source_nonzero_blocks": 1137,
+            "source_vector_sum": 20000006,
+            "target_nonzero_blocks": 1137,
+            "target_vector_sum": 20000004,
+            "window": 0
+          },
+          {
+            "count_multiset_overlap": 0.9845559845559846,
+            "source_nonzero_blocks": 259,
+            "source_vector_sum": 19999994,
+            "target_nonzero_blocks": 259,
+            "target_vector_sum": 19999996,
+            "window": 1
+          }
+        ],
+        "production_eligible": false,
+        "schema_version": 1,
+        "source_checkpoint": {
+          "path": "/nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/workloads/lbm/A/checkpoint/20/_20_0.000069_memory_.zstd",
+          "sha256": "3c7756fd869be340bbb316d74457a22232008bcb8f1242e3fd93d8424439cb87"
+        },
+        "source_point_a": 20,
+        "source_restore": {
+          "checkpoint_done": false,
+          "checkpoint_instruction": null,
+          "guest_instructions": 40000000,
+          "hit_good_trap": false,
+          "nemu_good_state": true,
+          "return_code": 0
+        },
+        "status": "validated_experimental",
+        "target_checkpoint": {
+          "path": "/nfs/home/wujiabin/work/checkpoint_align/experiment/multi-workload/results/lbm/A20-B20/target-generation/aligned/lbm/20/_20_1.000000_memory_.zstd",
+          "sha256": "858a4102689fbfd9fab20091893e7751ccb92d1188a255559479f0df3ad75ad3"
+        },
+        "target_point_b": 20,
+        "target_restore": {
+          "checkpoint_done": false,
+          "checkpoint_instruction": null,
+          "guest_instructions": 40000000,
+          "hit_good_trap": false,
+          "nemu_good_state": true,
+          "return_code": 0
+        },
+        "workload": "lbm",
+        "workload_terminal_completion": false
+      },
+      "run_id": "generic-suite-lbm-A20-B20",
+      "source_restore": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": false,
+        "checkpoint_notify_observed": [],
+        "checkpoint_trigger_observed": [],
+        "evidence_lines": {
+          "checkpoint_notify_observed": null,
+          "checkpoint_trigger_observed": null,
+          "guest_instructions": 28,
+          "nemu_good_state": 31,
+          "rng_seed_patched": 22,
+          "saved_pc": null,
+          "start_profiling_base": null
+        },
+        "guest_instructions": 40000000,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/multi-workload/results/lbm/A20-B20/source-restore/logs/restore.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": null,
+        "simpoint": null,
+        "start_profiling_base": null,
+        "workload_command": null,
+        "workload_md5": null
+      },
+      "target_restore": {
+        "build_time": "14:53:51, Aug 20 2026",
+        "checkpoint_done": false,
+        "checkpoint_notify_observed": [],
+        "checkpoint_trigger_observed": [],
+        "evidence_lines": {
+          "checkpoint_notify_observed": null,
+          "checkpoint_trigger_observed": null,
+          "guest_instructions": 28,
+          "nemu_good_state": 31,
+          "rng_seed_patched": 22,
+          "saved_pc": null,
+          "start_profiling_base": null
+        },
+        "guest_instructions": 40000000,
+        "hit_good_trap": false,
+        "kernel_crng_initialized": false,
+        "log": "experiment/multi-workload/results/lbm/A20-B20/target-restore/logs/restore.out.log",
+        "nemu_good_state": true,
+        "rng_seed_patched": true,
+        "saved_pc": null,
+        "simpoint": null,
+        "start_profiling_base": null,
+        "workload_command": null,
+        "workload_md5": null
+      }
+    }
+  ],
+  "schema_version": 1,
+  "workload": "lbm"
+}

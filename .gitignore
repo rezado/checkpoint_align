@@ -1,0 +1,37 @@
+# Python caches
+__pycache__/
+*.py[cod]
+.planning/
+
+# Copied workload and emulator artifacts (large/generated)
+experiment/**/workloads/
+experiment/**/results/
+experiment/**/runtime/
+experiment/**/tools/
+experiment/**/A/
+experiment/**/B/
+experiment/**/generated-*/
+experiment/**/restore-logs/
+experiment/**/suite-manifest.json
+experiment/**/m1-replay.json
+experiment/**/aligned-regions.json
+experiment/**/bbv-alignment-evidence.json
+experiment/**/experiment-result.json
+experiment/**/manifest.json
+experiment/**/B-aligned-*
+experiment/**/rerun-*/
+experiment/**/catalog-summary.json
+experiment/**/controlled-positive.json
+experiment/**/validation-summary.json
+experiment/**/shifted-candidate-review.json
+local-build/
+local-src/
+
+# Binary/profile payloads and document-only experiment inputs
+*.elf
+*.bin
+*.Image
+*.cpio
+*.zstd
+*.gz
+*.pdf

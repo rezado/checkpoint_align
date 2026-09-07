@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "schema_kind": "m0-position-alignment",
+  "synthetic": true,
+  "contract": {
+    "workload_icount_domain": "workload_relative_instructions",
+    "interval_index_base": 0,
+    "interval_formula": "interval=floor(workload_icount/interval_instructions), offset=workload_icount%interval_instructions",
+    "event_phase_values": [
+      "before_instruction",
+      "after_instruction",
+      "after_taken_edge"
+    ],
+    "identity_rule": "A-to-A exact requires equal anchor_id, occurrence, and event_phase",
+    "alignment_semantics": "position coordinates only; no weight field"
+  },
+  "definitions": {
+    "BuildRun": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "workload_id",
+        "build_id",
+        "run_id",
+        "input_id",
+        "functional_path_id",
+        "icount_domain",
+        "interval_instructions",
+        "interval_index_base",
+        "event_phase",
+        "elf_sha256",
+        "manifest_sha256",
+        "terminal_marker",
+        "deterministic"
+      ],
+      "properties": {
+        "schema_version": {"type": "integer", "const": 1},
+        "workload_id": {"type": "string"},
+        "build_id": {"type": "string"},
+        "run_id": {"type": "string"},
+        "input_id": {"type": "string"},
+        "functional_path_id": {"type": "string"},
+        "icount_domain": {
+          "type": "string",
+          "const": "workload_relative_instructions"
+        },
+        "interval_instructions": {"type": "integer", "minimum": 1},
+        "interval_index_base": {"type": "integer", "const": 0},
+        "event_phase": {
+          "type": "string",
+          "enum": [
+            "before_instruction",
+            "after_instruction",
+            "after_taken_edge"
+          ]
+        },
+        "elf_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "terminal_marker": {"type": "string"},
+        "deterministic": {"type": "boolean"},
+        "terminal_observed": {"type": "boolean"},
+        "event_trace_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "SourcePosition": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "build_id",
+        "run_id",
+        "anchor_id",
+        "occurrence",
+        "event_phase",
+        "requested_icount",
+        "workload_icount",
+        "interval",
+        "offset_in_interval",
+        "snap_delta_instructions"
+      ],
+      "properties": {
+        "schema_version": {"type": "integer", "const": 1},
+        "build_id": {"type": "string"},
+        "run_id": {"type": "string"},
+        "anchor_id": {"type": "string"},
+        "occurrence": {"type": "integer", "minimum": 0},
+        "event_phase": {
+          "type": "string",
+          "enum": [
+            "before_instruction",
+            "after_instruction",
+            "after_taken_edge"
+          ]
+        },
+        "requested_icount": {"type": "integer", "minimum": 0},
+        "workload_icount": {"type": "integer", "minimum": 0},
+        "interval": {"type": "integer", "minimum": 0},
+        "offset_in_interval": {"type": "integer", "minimum": 0},
+        "snap_delta_instructions": {"type": "integer"},
+        "context_end_icount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "PositionCorrespondence": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "workload_id",
+        "source",
+        "target",
+        "status",
+        "anchor_confidence",
+        "position_fidelity",
+        "validation_state",
+        "reason",
+        "best_candidates",
+        "evidence",
+        "label",
+        "synthetic"
+      ],
+      "properties": {
+        "schema_version": {"type": "integer", "const": 1},
+        "workload_id": {"type": "string"},
+        "source": {"$ref": "SourcePosition"},
+        "target": {"$ref": "SourcePosition", "nullable": true},
+        "status": {"type": "string", "enum": ["matched", "rejected"]},
+        "anchor_confidence": {
+          "type": "string",
+          "enum": ["H", "M", "L", "R"]
+        },
+        "position_fidelity": {
+          "type": "string",
+          "enum": ["exact", "snapped", "interpolated", "rejected"]
+        },
+        "validation_state": {
+          "type": "string",
+          "enum": ["candidate", "validated", "failed"]
+        },
+        "reason": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "NO_ANCHOR",
+            "NO_CANDIDATE",
+            "SEARCH_TRUNCATED",
+            "AMBIGUOUS",
+            "CROSSING",
+            "MARKER_GAP_TOO_LARGE",
+            "LOW_FIDELITY",
+            "OUT_OF_TRACE",
+            "POST_ALIGN_DIVERGENCE",
+            "INCOMPATIBLE_RUN",
+            "NONDETERMINISTIC_TRACE",
+            "ARTIFACT_MISMATCH",
+            "EVIDENCE_COLLECTION_FAILED"
+          ]
+        },
+        "best_candidates": {"type": "array"},
+        "evidence": {"type": "object"},
+        "label": {"type": "string"},
+        "synthetic": {"type": "boolean"},
+        "occurrence_transform": {"type": ["object", "null"]}
+      }
+    },
+    "AlignmentResult": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "workload_id",
+        "source_build",
+        "target_build",
+        "source_positions",
+        "correspondences",
+        "status",
+        "anchor_confidence",
+        "position_fidelity",
+        "validation_state",
+        "global_path_margin",
+        "evidence",
+        "manifest_hashes",
+        "reason",
+        "label",
+        "synthetic"
+      ],
+      "properties": {
+        "schema_version": {"type": "integer", "const": 1},
+        "workload_id": {"type": "string"},
+        "source_build": {"type": "string"},
+        "target_build": {"type": "string"},
+        "source_positions": {"type": "array"},
+        "correspondences": {"type": "array"},
+        "status": {"type": "string", "enum": ["matched", "rejected"]},
+        "anchor_confidence": {
+          "type": "string",
+          "enum": ["H", "M", "L", "R"]
+        },
+        "position_fidelity": {
+          "type": "string",
+          "enum": ["exact", "snapped", "interpolated", "rejected"]
+        },
+        "validation_state": {
+          "type": "string",
+          "enum": ["candidate", "validated", "failed"]
+        },
+        "global_path_margin": {"type": ["number", "null"]},
+        "evidence": {"type": "object"},
+        "manifest_hashes": {"type": "object"},
+        "reason": {"type": ["string", "null"]},
+        "label": {"type": "string"},
+        "synthetic": {"type": "boolean"}
+      }
+    }
+  },
+  "instances": {
+    "BuildRun": {
+      "schema_version": 1,
+      "workload_id": "m0-marker-loop",
+      "build_id": "fixture-A-v1",
+      "run_id": "fixture-A-rerun-01",
+      "input_id": "input-constant-01",
+      "functional_path_id": "main-loop-v1",
+      "icount_domain": "workload_relative_instructions",
+      "interval_instructions": 100,
+      "interval_index_base": 0,
+      "event_phase": "before_instruction",
+      "elf_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "terminal_marker": "WORKLOAD_DONE",
+      "deterministic": true,
+      "terminal_observed": true,
+      "event_trace_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "SourcePosition": {
+      "schema_version": 1,
+      "build_id": "fixture-A-v1",
+      "run_id": "fixture-A-rerun-01",
+      "anchor_id": "loop.body",
+      "occurrence": 1,
+      "event_phase": "before_instruction",
+      "requested_icount": 1100,
+      "workload_icount": 1100,
+      "interval": 11,
+      "offset_in_interval": 0,
+      "snap_delta_instructions": 0,
+      "context_end_icount": 1200
+    },
+    "PositionCorrespondence": {
+      "schema_version": 1,
+      "workload_id": "m0-marker-loop",
+      "source": {
+        "schema_version": 1,
+        "build_id": "fixture-A-v1",
+        "run_id": "fixture-A-rerun-01",
+        "anchor_id": "loop.body",
+        "occurrence": 1,
+        "event_phase": "before_instruction",
+        "requested_icount": 1100,
+        "workload_icount": 1100,
+        "interval": 11,
+        "offset_in_interval": 0,
+        "snap_delta_instructions": 0
+      },
+      "target": {
+        "schema_version": 1,
+        "build_id": "fixture-A-v1",
+        "run_id": "fixture-A-rerun-02",
+        "anchor_id": "loop.body",
+        "occurrence": 1,
+        "event_phase": "before_instruction",
+        "requested_icount": 1100,
+        "workload_icount": 1100,
+        "interval": 11,
+        "offset_in_interval": 0,
+        "snap_delta_instructions": 0
+      },
+      "status": "matched",
+      "anchor_confidence": "H",
+      "position_fidelity": "exact",
+      "validation_state": "validated",
+      "reason": null,
+      "best_candidates": [],
+      "evidence": {"marker_trace": "identity"},
+      "label": "identity",
+      "synthetic": true,
+      "occurrence_transform": {"kind": "identity", "delta": 0}
+    },
+    "AlignmentResult": {
+      "schema_version": 1,
+      "workload_id": "m0-marker-loop",
+      "source_build": "fixture-A-v1",
+      "target_build": "fixture-A-v1",
+      "source_positions": [
+        {
+          "schema_version": 1,
+          "build_id": "fixture-A-v1",
+          "run_id": "fixture-A-rerun-01",
+          "anchor_id": "loop.body",
+          "occurrence": 1,
+          "event_phase": "before_instruction",
+          "requested_icount": 1100,
+          "workload_icount": 1100,
+          "interval": 11,
+          "offset_in_interval": 0,
+          "snap_delta_instructions": 0
+        }
+      ],
+      "correspondences": [
+        {
+          "schema_version": 1,
+          "workload_id": "m0-marker-loop",
+          "source": {
+            "schema_version": 1,
+            "build_id": "fixture-A-v1",
+            "run_id": "fixture-A-rerun-01",
+            "anchor_id": "loop.body",
+            "occurrence": 1,
+            "event_phase": "before_instruction",
+            "requested_icount": 1100,
+            "workload_icount": 1100,
+            "interval": 11,
+            "offset_in_interval": 0,
+            "snap_delta_instructions": 0
+          },
+          "target": {
+            "schema_version": 1,
+            "build_id": "fixture-A-v1",
+            "run_id": "fixture-A-rerun-02",
+            "anchor_id": "loop.body",
+            "occurrence": 1,
+            "event_phase": "before_instruction",
+            "requested_icount": 1100,
+            "workload_icount": 1100,
+            "interval": 11,
+            "offset_in_interval": 0,
+            "snap_delta_instructions": 0
+          },
+          "status": "matched",
+          "anchor_confidence": "H",
+          "position_fidelity": "exact",
+          "validation_state": "validated",
+          "reason": null,
+          "best_candidates": [],
+          "evidence": {"marker_trace": "identity"},
+          "label": "identity",
+          "synthetic": true,
+          "occurrence_transform": {"kind": "identity", "delta": 0}
+        }
+      ],
+      "status": "matched",
+      "anchor_confidence": "H",
+      "position_fidelity": "exact",
+      "validation_state": "validated",
+      "global_path_margin": 1.0,
+      "evidence": {"independent_marker_trace": true},
+      "manifest_hashes": {
+        "source": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "target": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "reason": null,
+      "label": "identity",
+      "synthetic": true
+    }
+  }
+}

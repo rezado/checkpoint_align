@@ -1,0 +1,9 @@
+# Entry events are observed before the instruction at PC executes.
+version 1
+mode checkpoint-on-occurrence
+output /absolute/path/to/semantic-hit.json
+icount-origin 0
+interval-size 20000000
+context-size 16
+watch 17 0x1bc94
+target 17 9181
