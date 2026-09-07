@@ -19,3 +19,4 @@
 - PositionAligner replay 同步读取 manifest 侧标签；新增根 README 和 `.gitignore`，忽略复制 workload、二进制、profile、日志和生成结果。
 - 包内 17 个单元测试通过；临时 `demo` workload 验证自动发现和 `baseline/candidate` 标签 prepare 通过。
 - 已执行 `git init`，待完成首个源码提交和最终状态检查。
+- 已在 `main` 分支完成首个提交 `1676951`；提交后语法检查和 17 个包内单元测试均通过，工作区干净，忽略规则覆盖复制产物和生成结果。
