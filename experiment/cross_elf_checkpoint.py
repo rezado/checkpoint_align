@@ -13,6 +13,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -818,6 +819,149 @@ def command_checkpoint_all(args: argparse.Namespace) -> None:
     print(json.dumps(batch, indent=2))
 
 
+def export_slices(
+    suite: Path,
+    workload: str,
+    output: Path,
+    include_all_materialized: bool,
+    storage_mode: str,
+) -> dict:
+    suite = suite.resolve()
+    output = output.resolve()
+    manifest = read_json(suite / "suite-manifest.json")
+    source_side, target_side = side_labels(manifest)
+    batch_path = suite / "results" / workload / "checkpoint-all-result.json"
+    batch = read_json(batch_path)
+    if batch.get("workload") != workload:
+        raise ValueError(f"batch result workload is not {workload}: {batch.get('workload')}")
+    if output.exists() and any(output.iterdir()):
+        raise RuntimeError(f"slice output is not empty: {output}")
+
+    pairs = batch.get("pairs", [])
+    selected = (
+        pairs if include_all_materialized
+        else [pair for pair in pairs if pair.get("status") == "validated_experimental"]
+    )
+    if not selected:
+        raise RuntimeError(
+            "no validated_experimental checkpoint is available; use "
+            "--include-all-materialized only for explicitly labelled candidates"
+        )
+
+    source_clusters = dict(parse_points(local_files(suite, workload, source_side)["simpoints"]))
+    slices = []
+    archive_hashes: dict[Path, str] = {}
+    for pair in selected:
+        source_point = int(pair["source_point"])
+        target_point = int(pair["target_point"])
+        if source_point not in source_clusters:
+            raise RuntimeError(f"source SimPoints do not contain {workload}:{source_point}")
+        source_archive = Path(pair["target_checkpoint"]["path"]).resolve()
+        if not source_archive.is_file():
+            raise FileNotFoundError(source_archive)
+        expected_hash = pair["target_checkpoint"]["sha256"]
+        actual_hash = sha256(source_archive)
+        if actual_hash != expected_hash:
+            raise RuntimeError(
+                f"target checkpoint hash mismatch for {workload}:{target_point}: "
+                f"expected {expected_hash}, got {actual_hash}"
+            )
+        archive = Path("checkpoint") / workload / str(target_point) / (
+            f"_{target_point}_1.000000_memory_.zstd"
+        )
+        previous_hash = archive_hashes.setdefault(archive, actual_hash)
+        if previous_hash != actual_hash:
+            raise RuntimeError(
+                f"target point {target_point} resolves to different checkpoint contents"
+            )
+        alignment = pair.get("alignment", {})
+        slices.append({
+            "source_side": pair.get("source_side", source_side),
+            "source_point": source_point,
+            "source_cluster": source_clusters[source_point],
+            "target_side": pair.get("target_side", target_side),
+            "target_point": target_point,
+            "checkpoint": str(archive),
+            "checkpoint_sha256": actual_hash,
+            "input_checkpoint": str(source_archive),
+            "alignment_status": alignment.get("status", "accepted_experimental"),
+            "alignment_score": alignment.get("score"),
+            "alignment_margin": alignment.get("margin"),
+            "confidence": alignment.get("confidence"),
+            "validation_status": pair.get("status"),
+            "minimum_post_restore_overlap": pair.get("minimum_post_restore_overlap"),
+            "production_eligible": bool(pair.get("production_eligible", False)),
+        })
+
+    output.mkdir(parents=True, exist_ok=True)
+    source_by_archive = {
+        Path(item["checkpoint"]): Path(item["input_checkpoint"])
+        for item in slices
+    }
+    for archive in sorted(archive_hashes, key=str):
+        target = output / archive
+        target.parent.mkdir(parents=True, exist_ok=True)
+        source = source_by_archive[archive]
+        if storage_mode == "copy":
+            shutil.copy2(source, target)
+        else:
+            target.symlink_to(os.path.relpath(source, start=target.parent))
+
+    ordered = sorted(slices, key=lambda item: (item["source_cluster"], item["source_point"]))
+    cluster = output / "cluster" / workload
+    cluster.mkdir(parents=True, exist_ok=True)
+    (cluster / "simpoints0").write_text(
+        "".join(f"{item['target_point']} {item['source_cluster']}\n" for item in ordered)
+    )
+    header = [
+        "source_point", "source_cluster", "target_point", "alignment_status",
+        "validation_status", "confidence", "alignment_score", "alignment_margin",
+        "minimum_post_restore_overlap", "checkpoint", "checkpoint_sha256",
+    ]
+    rows = ["\t".join(header)]
+    rows.extend(
+        "\t".join(str(item.get(field, "")) if item.get(field) is not None else "" for field in header)
+        for item in ordered
+    )
+    (output / "mapping.tsv").write_text("\n".join(rows) + "\n")
+
+    result = {
+        "schema_version": 1,
+        "report_kind": "aligned-checkpoint-slice-export",
+        "workload": workload,
+        "source_side": source_side,
+        "target_side": target_side,
+        "interval_instructions": manifest["interval_instructions"],
+        "selection": (
+            "all_materialized" if include_all_materialized else "validated_experimental"
+        ),
+        "storage_mode": storage_mode,
+        "source_batch_result": {
+            "path": str(batch_path),
+            "sha256": sha256(batch_path),
+            "status": batch.get("status"),
+        },
+        "weights_used": False,
+        "weights_emitted": False,
+        "slice_count": len(slices),
+        "checkpoint_archive_count": len(archive_hashes),
+        "all_source_checkpoints_included": len(slices) == batch.get("source_checkpoint_count"),
+        "validation_status_counts": dict(Counter(item["validation_status"] for item in slices)),
+        "production_eligible": bool(slices) and all(item["production_eligible"] for item in slices),
+        "slices": ordered,
+    }
+    write_json(output / "slice-manifest.json", result)
+    return result
+
+
+def command_export_slices(args: argparse.Namespace) -> None:
+    result = export_slices(
+        args.suite, args.workload, args.output,
+        args.include_all_materialized, args.mode,
+    )
+    print(json.dumps(result, indent=2))
+
+
 def command_report(args: argparse.Namespace) -> None:
     suite = args.suite.resolve()
     manifest = read_json(suite / "suite-manifest.json")
@@ -973,6 +1117,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="reuse existing generated checkpoints and completed pair results",
     )
     checkpoint_all.set_defaults(func=command_checkpoint_all)
+
+    export = subparsers.add_parser(
+        "export-slices",
+        help="export generated target checkpoints as a labelled slice set",
+    )
+    export.add_argument("--suite", type=Path, required=True)
+    export.add_argument("--workload", required=True)
+    export.add_argument("--output", type=Path, required=True)
+    export.add_argument(
+        "--include-all-materialized", action="store_true",
+        help="include rejected, failed-validation, and unvalidated checkpoint candidates",
+    )
+    export.add_argument(
+        "--mode", choices=("symlink", "copy"), default="symlink",
+        help="link checkpoints by default, or copy them into the exported slice set",
+    )
+    export.set_defaults(func=command_export_slices)
 
     report = subparsers.add_parser("report", help="summarize alignment and checkpoint results")
     report.add_argument("--suite", type=Path, required=True)

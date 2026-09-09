@@ -1,6 +1,6 @@
 # Checkpoint Align 代码、使用方法与当前结果
 
-本文档说明本仓库的代码结构、输入约定、完整使用流程、输出文件和当前已有结果。结果快照基于 2026-09-07 当前工作区中的机器可读 JSON；运行产物默认被 `.gitignore` 排除，不随源码提交。
+本文档说明本仓库的代码结构、输入约定、完整使用流程、输出文件和当前已有结果。结果快照基于 2026-09-09 当前工作区中的机器可读 JSON；运行产物默认被 `.gitignore` 排除，不随源码提交。
 
 ## 1. 项目目标
 
@@ -26,6 +26,7 @@
 | `checkpoint` | 生成一个 target-native checkpoint，并对 source/target checkpoint 做有界 restore/profile | 是 |
 | `map-checkpoints` | 以 source 实际 checkpoint 为准，检查并输出完整 A→B candidate 清单 | 否 |
 | `checkpoint-all` | 批量生成 B checkpoint，并可逐对 restore/profile | 是 |
+| `export-slices` | 根据批量结果导出新的 checkpoint-backed slice 集合 | 否 |
 | `report` | 汇总 suite 中已有的 alignment 和 checkpoint 结果 | 否 |
 
 主入口采用 manifest 驱动，不把 workload 名称和构建标签写死在代码中：
@@ -303,14 +304,47 @@ python3 experiment/cross_elf_checkpoint.py checkpoint-all \
 
 之后可去掉 `--skip-validation` 并加 `--resume`，复用已经生成的 B checkpoint，继续完成逐对验证。批量状态持续写入 `results/<workload>/checkpoint-all-result.json`。
 
-### 4.7 生成汇总报告
+### 4.7 根据生成结果导出新的切片
+
+`checkpoint-all` 完成后，使用 `export-slices` 将 B 侧 checkpoint 组织成可供后续 restore/运行的切片目录。命令读取 `results/<workload>/checkpoint-all-result.json`，逐个核对目标 checkpoint 的 SHA-256，然后生成：
+
+```text
+<output>/
+├── checkpoint/<workload>/<B-point>/*_memory_.zstd
+├── cluster/<workload>/simpoints0
+├── mapping.tsv
+└── slice-manifest.json
+```
+
+默认只导出 `validated_experimental`：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py export-slices \
+  --suite /path/to/alignment-suite \
+  --workload mcf \
+  --output /path/to/alignment-suite/results/mcf/slices-validated
+```
+
+如果明确需要把生成但被拒绝、验证失败或跳过验证的候选也作为诊断切片导出，必须显式指定：
+
+```sh
+python3 experiment/cross_elf_checkpoint.py export-slices \
+  --suite /path/to/alignment-suite \
+  --workload mcf \
+  --output /path/to/alignment-suite/results/mcf/slices-all-candidates \
+  --include-all-materialized
+```
+
+默认使用相对符号链接，不复制大型 checkpoint；需要独立归档时加 `--mode copy`。`simpoints0` 的第一列是 B 的 target point，第二列沿用 A 的 source cluster id 作为切片身份。导出不生成 `weights0`，也不把 A 的权重伪装成 B 的代表性权重；`slice-manifest.json` 保存每个切片的 alignment/validation 状态、overlap、hash 和 `production_eligible` 标记。
+
+### 4.8 生成汇总报告
 
 ```sh
 python3 experiment/cross_elf_checkpoint.py report \
   --suite /path/to/alignment-suite
 ```
 
-### 4.8 使用全局 PositionAligner replay
+### 4.9 使用全局 PositionAligner replay
 
 ```sh
 python3 -m experiment.position_aligner replay \
@@ -454,7 +488,7 @@ python3 -m experiment.position_aligner replay \
 | 13935 | 13644 | `rejected_ambiguous` |
 | 14001 | 13715 | `rejected_ambiguous` |
 
-因此当前证据是“22 个 A checkpoint 都有 B candidate position”，不是“22 个映射都已可靠验证”。只有 A1→B1 通过当前 alignment gate 并完成 checkpoint restore 验证；其余 21 个必须使用 `--include-rejected` 才会 materialize，且会保留 `R` confidence/ambiguous 状态。
+批量运行已经使用 `--include-rejected` 实际生成 22/22 个 B-native checkpoint，共约 5.9 GB；22 个归档都完成物化和结构检查。逐对有界 restore/profile 的最终状态为：A1→B1 是 `validated_experimental`，其余 21 对是 `rejected_post_restore_divergence`。因此当前证据是“22 个 A checkpoint 都有已生成的 B candidate checkpoint”，不是“22 个映射都已可靠验证”。默认 `export-slices` 只会导出 A1→B1；全量诊断导出必须显式使用 `--include-all-materialized`，并保留 21 个拒绝状态。
 
 ### 6.5 全局 PositionAligner M1 replay
 
@@ -535,7 +569,7 @@ python3 -m unittest \
   experiment.m3.test_review_shifted_candidates
 ```
 
-当前结果为 19 个测试通过。
+当前结果为 20 个测试通过。
 
 仓库使用本地 `main` 分支管理源码。以下内容被 `.gitignore` 排除：
 

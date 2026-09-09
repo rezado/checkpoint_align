@@ -19,6 +19,8 @@ python3 experiment/cross_elf_checkpoint.py map-checkpoints \
   --suite /path/to/suite --workload lbm
 python3 experiment/cross_elf_checkpoint.py checkpoint-all \
   --suite /path/to/suite --workload lbm --plan-only
+python3 experiment/cross_elf_checkpoint.py export-slices \
+  --suite /path/to/suite --workload lbm --output /path/to/new-slices
 python3 experiment/cross_elf_checkpoint.py checkpoint \
   --suite /path/to/suite --workload lbm --source-point 20
 python3 experiment/cross_elf_checkpoint.py report --suite /path/to/suite

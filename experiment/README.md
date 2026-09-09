@@ -16,6 +16,9 @@
 5. `checkpoint-all`: generate all selected target checkpoints in one NEMU run,
    then optionally restore/profile every source-target pair. It supports
    planning, explicit inclusion of rejected candidates, and resume.
+6. `export-slices`: package generated target checkpoints as a new labelled
+   slice set. It defaults to validated pairs and can explicitly include all
+   materialized candidates for diagnosis.
 
 The method never treats BB IDs, PCs, or raw instruction positions as shared
 across ELF files. It is still an experimental BBV/DCFG proxy rather than a
@@ -59,6 +62,17 @@ python3 experiment/cross_elf_checkpoint.py checkpoint-all \
   --suite experiment/multi-workload --workload mcf \
   --include-rejected --timeout 86400
 
+# Export only pairs that passed bounded post-restore validation.
+python3 experiment/cross_elf_checkpoint.py export-slices \
+  --suite experiment/multi-workload --workload mcf \
+  --output experiment/multi-workload/results/mcf/slices-validated
+
+# Export all generated candidates with their rejected/unvalidated labels.
+python3 experiment/cross_elf_checkpoint.py export-slices \
+  --suite experiment/multi-workload --workload mcf \
+  --output experiment/multi-workload/results/mcf/slices-all-candidates \
+  --include-all-materialized
+
 python3 experiment/cross_elf_checkpoint.py report \
   --suite experiment/multi-workload
 ```
@@ -80,6 +94,7 @@ checkpoint: --warmup, --boot-allowance, --generation-tail,
             --restore-instructions, --min-post-restore-overlap, --timeout
 checkpoint-all: the same runtime controls, plus --include-rejected,
                 --plan-only, --skip-validation, --resume
+export-slices: --include-all-materialized, --mode {symlink,copy}
 ```
 
 `checkpoint` refuses rejected candidates by default. `--force` exists only for
@@ -87,6 +102,15 @@ explicit diagnostic experiments and does not upgrade the result confidence.
 After restore, every compared window must meet the default 0.5 overlap floor;
 otherwise the result is `rejected_post_restore_divergence` even when both
 checkpoints are structurally valid and executable.
+
+`export-slices` uses `checkpoint-all-result.json` as its authoritative input
+and verifies each selected target checkpoint against the recorded SHA-256. It
+writes `checkpoint/<workload>/<target-point>/`, a target
+`cluster/<workload>/simpoints0`, `mapping.tsv`, and `slice-manifest.json`. The
+source cluster id is retained as the slice identity; no `weights0` is emitted
+because position alignment does not derive representative target weights. The
+default symlink mode avoids duplicating large archives; use `--mode copy` for
+a self-contained export.
 
 ## Acceptance boundary
 

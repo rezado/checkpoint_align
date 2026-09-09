@@ -14,6 +14,10 @@
 - [complete] 为每个 A checkpoint 输出 B 候选、置信度和批量执行状态，并支持断点续跑
 - [complete] 用 mcf 的 22 个实际 checkpoint 验证覆盖关系和代表性批处理路径
 - [complete] 更新使用文档并提交 Git
+- [completed] 根据 checkpoint-all 实际结果导出新的 B slice 集合
+- [completed] 输出标准 checkpoint/cluster 布局、slice manifest 与完整性绑定
+- [completed] 分别验证仅通过项和包含拒绝项的 mcf 导出
+- [completed] 更新文档并提交 Git
 
 ## Errors Encountered
 | Error | Attempt | Resolution |

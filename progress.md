@@ -27,3 +27,11 @@
 - 新增 `map-checkpoints` 和 `checkpoint-all`：实际 source checkpoint 全覆盖检查、一次 NEMU 批量生成、逐对验证、`--include-rejected`、`--plan-only`、`--skip-validation` 和 `--resume`。
 - mcf 映射验证为 22/22，22 个唯一 B candidate、无碰撞；1 个推荐映射、21 个 ambiguous candidate。临时双点批量 generation 验证通过；总计 19 个测试通过。
 - `report` 已加入 checkpoint correspondence 与 batch 状态汇总；中文总文档和 README 已补充 mcf 全量命令、22 条映射及置信度解释。
+
+## 2026-09-09
+
+- 用户要求从生成结果形成新的切片集合。已确认 mcf 22 个 B checkpoint 均已生成且 batch 完成；验证结果为 1 个通过、21 个 post-restore divergence。
+- 开始实现 `export-slices`，以 batch JSON 为权威输入并按验证状态筛选，输出 checkpoint/cluster/manifest。
+- 已完成 `export-slices`：导出前逐归档核对 batch 中记录的 SHA-256，支持默认相对 symlink 和显式 copy；输出 B point `simpoints0`、`mapping.tsv` 和 `slice-manifest.json`，不生成权重。
+- 已实际导出 mcf `slices-validated`（1 个）和 `slices-all-candidates`（22 个）；22 个链接均可解析，全候选状态保持 1 个 `validated_experimental`、21 个 `rejected_post_restore_divergence`。
+- 快速验证：Python compile 通过；20 个 unittest 通过；`git diff --check` 通过。
