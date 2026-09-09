@@ -65,12 +65,12 @@ python3 experiment/cross_elf_checkpoint.py checkpoint-all \
 # Export only pairs that passed bounded post-restore validation.
 python3 experiment/cross_elf_checkpoint.py export-slices \
   --suite experiment/multi-workload --workload mcf \
-  --output experiment/multi-workload/results/mcf/slices-validated
+  --output experiment/multi-workload/results/mcf/aligned-slices-paired
 
 # Export all generated candidates with their rejected/unvalidated labels.
 python3 experiment/cross_elf_checkpoint.py export-slices \
   --suite experiment/multi-workload --workload mcf \
-  --output experiment/multi-workload/results/mcf/slices-all-candidates \
+  --output experiment/multi-workload/results/mcf/aligned-slices-paired \
   --include-all-materialized
 
 python3 experiment/cross_elf_checkpoint.py report \
@@ -104,11 +104,14 @@ otherwise the result is `rejected_post_restore_divergence` even when both
 checkpoints are structurally valid and executable.
 
 `export-slices` uses `checkpoint-all-result.json` as its authoritative input
-and verifies each selected target checkpoint against the recorded SHA-256. It
-writes `checkpoint/<workload>/<target-point>/`, a target
-`cluster/<workload>/simpoints0`, `mapping.tsv`, and `slice-manifest.json`. The
-source cluster id is retained as the slice identity; no `weights0` is emitted
-because position alignment does not derive representative target weights. The
+and verifies both checkpoints in every selected pair against their recorded
+SHA-256. It writes separate `<source-side>/` and `<target-side>/` slice roots;
+each contains `checkpoint/<workload>/`, `cluster/<workload>/{simpoints0,weights0}`,
+and `checkpoints.json`. The source cluster id and weight are retained for both
+sides so paired measurements use identical weights; target points are the
+aligned positions. These inherited weights are not independently clustered
+target weights and are never used by alignment. `mapping.tsv` and
+`slice-manifest.json` record this provenance and every validation status. The
 default symlink mode avoids duplicating large archives; use `--mode copy` for
 a self-contained export.
 

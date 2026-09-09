@@ -35,3 +35,7 @@
 - 已完成 `export-slices`：导出前逐归档核对 batch 中记录的 SHA-256，支持默认相对 symlink 和显式 copy；输出 B point `simpoints0`、`mapping.tsv` 和 `slice-manifest.json`，不生成权重。
 - 已实际导出 mcf `slices-validated`（1 个）和 `slices-all-candidates`（22 个）；22 个链接均可解析，全候选状态保持 1 个 `validated_experimental`、21 个 `rejected_post_restore_divergence`。
 - 快速验证：Python compile 通过；20 个 unittest 通过；`git diff --check` 通过。
+- 用户要求把 A/B 切片分别放入两个目录，并按现有切片目录格式各写 `checkpoints.json`。已确认当前 profile/export 中没有该文件；一次宽泛 NFS 搜索在 60 秒超时，切换为已知路径定向检查。
+- 已定位 workload-builder 正式 metadata 生成逻辑和 `checkpoints_all.json` 样例，确认 `{workload: {insts, points}}` schema。
+- `export-slices` 已扩展为分别输出 A/B checkpoint、cluster、weights 和 `checkpoints.json`，并实际生成 mcf `aligned-slices-paired` 共 22 对。
+- A/B 两侧各 22 个 checkpoint 的 hash、相对链接、`checkpoints.json` point 集合、`simpoints0`/`weights0` 和 zstd 完整性复核均通过；20 个 unittest 通过。

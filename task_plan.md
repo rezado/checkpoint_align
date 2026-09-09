@@ -18,9 +18,14 @@
 - [completed] 输出标准 checkpoint/cluster 布局、slice manifest 与完整性绑定
 - [completed] 分别验证仅通过项和包含拒绝项的 mcf 导出
 - [completed] 更新文档并提交 Git
+- [completed] 定位现有切片目录并确认 checkpoints.json schema
+- [completed] 扩展导出命令，分别生成 A/B 切片目录和 checkpoints.json
+- [completed] 实际导出 mcf A/B 切片并检查链接、JSON、hash 与压缩完整性
+- [completed] 更新文档并提交 Git
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |---|---:|---|
 | 当前目录不是 Git 仓库 | 1 | 本任务明确要求建立本地仓库，完成代码梳理后执行 git init |
 | `unittest discover -s experiment` 无法导入相对模块 | 1 | 改用 `python -m unittest experiment.position_aligner.test_bbv experiment.test_dwarf_source` |
+| 在整个 work/share NFS 树查找 `checkpoints.json` 超时 | 1 | 改为已知仓库和共享根目录的定向浅层搜索 |

@@ -310,8 +310,14 @@ python3 experiment/cross_elf_checkpoint.py checkpoint-all \
 
 ```text
 <output>/
-├── checkpoint/<workload>/<B-point>/*_memory_.zstd
-├── cluster/<workload>/simpoints0
+├── A/
+│   ├── checkpoint/<workload>/<A-point>/*_memory_.zstd
+│   ├── cluster/<workload>/{simpoints0,weights0}
+│   └── checkpoints.json
+├── B/
+│   ├── checkpoint/<workload>/<B-point>/*_memory_.zstd
+│   ├── cluster/<workload>/{simpoints0,weights0}
+│   └── checkpoints.json
 ├── mapping.tsv
 └── slice-manifest.json
 ```
@@ -322,7 +328,7 @@ python3 experiment/cross_elf_checkpoint.py checkpoint-all \
 python3 experiment/cross_elf_checkpoint.py export-slices \
   --suite /path/to/alignment-suite \
   --workload mcf \
-  --output /path/to/alignment-suite/results/mcf/slices-validated
+  --output /path/to/alignment-suite/results/mcf/aligned-slices-paired
 ```
 
 如果明确需要把生成但被拒绝、验证失败或跳过验证的候选也作为诊断切片导出，必须显式指定：
@@ -331,11 +337,11 @@ python3 experiment/cross_elf_checkpoint.py export-slices \
 python3 experiment/cross_elf_checkpoint.py export-slices \
   --suite /path/to/alignment-suite \
   --workload mcf \
-  --output /path/to/alignment-suite/results/mcf/slices-all-candidates \
+  --output /path/to/alignment-suite/results/mcf/aligned-slices-paired \
   --include-all-materialized
 ```
 
-默认使用相对符号链接，不复制大型 checkpoint；需要独立归档时加 `--mode copy`。`simpoints0` 的第一列是 B 的 target point，第二列沿用 A 的 source cluster id 作为切片身份。导出不生成 `weights0`，也不把 A 的权重伪装成 B 的代表性权重；`slice-manifest.json` 保存每个切片的 alignment/validation 状态、overlap、hash 和 `production_eligible` 标记。
+默认使用相对符号链接，不复制大型 checkpoint；需要独立归档时加 `--mode copy`。A/B 各自的 `checkpoints.json` 沿用标准切片主体格式 `{workload: {insts, points}}`：A 的 point 是原位置，B 的 point 是对齐后的 target 位置。两侧 `simpoints0` 保留同一个 A cluster id，并使用相同的 A SimPoint weight，使成对测量采用相同权重。该权重不是对 B 独立聚类得到的代表性权重，且对齐算法从不读取权重；来源会记录在 `slice-manifest.json`。manifest 同时保存每个切片的 alignment/validation 状态、overlap、hash 和 `production_eligible` 标记。
 
 ### 4.8 生成汇总报告
 

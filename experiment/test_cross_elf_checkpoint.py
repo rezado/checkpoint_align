@@ -71,17 +71,30 @@ class SliceExportTest(unittest.TestCase):
         simpoints = self.suite / "workloads" / "demo" / "A" / "cluster" / "simpoints0"
         simpoints.parent.mkdir(parents=True)
         simpoints.write_text("7 3\n11 8\n")
+        source_json = self.suite / "workloads" / "demo" / "A" / "json" / "demo.json"
+        target_json = self.suite / "workloads" / "demo" / "B" / "json" / "demo.json"
+        source_json.parent.mkdir(parents=True)
+        target_json.parent.mkdir(parents=True)
+        source_json.write_text(json.dumps({
+            "demo": {"insts": "1000", "points": {"7": "0.6", "11": "0.4"}}
+        }))
+        target_json.write_text(json.dumps({"demo": {"insts": "1100", "points": {}}}))
         (self.suite / "suite-manifest.json").write_text(json.dumps({
             "interval_instructions": 20_000_000,
             "workloads": ["demo"],
             "sides": {"source": "A", "target": "B"},
         }))
-        archives = []
-        for point in (9, 13):
-            archive = self.root / "generated" / str(point) / f"_{point}_memory_.zstd"
-            archive.parent.mkdir(parents=True)
-            archive.write_bytes(f"checkpoint-{point}".encode())
-            archives.append(archive)
+        source_archives = []
+        target_archives = []
+        for source_point, target_point in ((7, 9), (11, 13)):
+            source_archive = self.root / "source" / str(source_point) / f"_{source_point}_memory_.zstd"
+            target_archive = self.root / "generated" / str(target_point) / f"_{target_point}_memory_.zstd"
+            source_archive.parent.mkdir(parents=True)
+            target_archive.parent.mkdir(parents=True)
+            source_archive.write_bytes(f"source-checkpoint-{source_point}".encode())
+            target_archive.write_bytes(f"target-checkpoint-{target_point}".encode())
+            source_archives.append(source_archive)
+            target_archives.append(target_archive)
         batch = {
             "workload": "demo",
             "source_checkpoint_count": 2,
@@ -93,7 +106,12 @@ class SliceExportTest(unittest.TestCase):
                     "status": "validated_experimental",
                     "production_eligible": False,
                     "alignment": {"status": "accepted_experimental", "score": 0.8},
-                    "target_checkpoint": {"path": str(archives[0]), "sha256": sha256(archives[0])},
+                    "source_checkpoint": {
+                        "path": str(source_archives[0]), "sha256": sha256(source_archives[0])
+                    },
+                    "target_checkpoint": {
+                        "path": str(target_archives[0]), "sha256": sha256(target_archives[0])
+                    },
                 },
                 {
                     "source_point": 11,
@@ -101,7 +119,12 @@ class SliceExportTest(unittest.TestCase):
                     "status": "rejected_post_restore_divergence",
                     "production_eligible": False,
                     "alignment": {"status": "rejected_ambiguous", "score": 0.3},
-                    "target_checkpoint": {"path": str(archives[1]), "sha256": sha256(archives[1])},
+                    "source_checkpoint": {
+                        "path": str(source_archives[1]), "sha256": sha256(source_archives[1])
+                    },
+                    "target_checkpoint": {
+                        "path": str(target_archives[1]), "sha256": sha256(target_archives[1])
+                    },
                 },
             ],
         }
@@ -112,12 +135,17 @@ class SliceExportTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary_directory.cleanup()
 
-    def test_exports_validated_or_all_materialized_slices_without_weights(self) -> None:
+    def test_exports_paired_slices_and_checkpoint_metadata(self) -> None:
         validated = export_slices(self.suite, "demo", self.root / "validated", False, "symlink")
         self.assertEqual(validated["slice_count"], 1)
-        self.assertTrue((self.root / "validated/checkpoint/demo/9/_9_1.000000_memory_.zstd").is_symlink())
-        self.assertEqual((self.root / "validated/cluster/demo/simpoints0").read_text(), "9 3\n")
-        self.assertFalse((self.root / "validated/cluster/demo/weights0").exists())
+        self.assertTrue((self.root / "validated/A/checkpoint/demo/7/_7_memory_.zstd").is_symlink())
+        self.assertTrue((self.root / "validated/B/checkpoint/demo/9/_9_memory_.zstd").is_symlink())
+        self.assertEqual((self.root / "validated/A/cluster/demo/simpoints0").read_text(), "7 3\n")
+        self.assertEqual((self.root / "validated/B/cluster/demo/simpoints0").read_text(), "9 3\n")
+        self.assertEqual((self.root / "validated/B/cluster/demo/weights0").read_text(), "0.6 3\n")
+        self.assertEqual(json.loads((self.root / "validated/B/checkpoints.json").read_text()), {
+            "demo": {"insts": "1100", "points": {"9": "0.6"}}
+        })
 
         all_slices = export_slices(self.suite, "demo", self.root / "all", True, "copy")
         self.assertEqual(all_slices["slice_count"], 2)
@@ -126,7 +154,11 @@ class SliceExportTest(unittest.TestCase):
             all_slices["validation_status_counts"],
             {"validated_experimental": 1, "rejected_post_restore_divergence": 1},
         )
-        self.assertEqual((self.root / "all/cluster/demo/simpoints0").read_text(), "9 3\n13 8\n")
+        self.assertEqual((self.root / "all/A/cluster/demo/simpoints0").read_text(), "7 3\n11 8\n")
+        self.assertEqual((self.root / "all/B/cluster/demo/simpoints0").read_text(), "9 3\n13 8\n")
+        self.assertEqual(json.loads((self.root / "all/A/checkpoints.json").read_text()), {
+            "demo": {"insts": "1000", "points": {"11": "0.4", "7": "0.6"}}
+        })
 
 
 if __name__ == "__main__":
