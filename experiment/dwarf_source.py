@@ -256,6 +256,11 @@ class Anchor:
     event_kind: str | None = None
     recovery: str | None = None
 
+    @property
+    def semantic_key(self) -> str:
+        source = self.source
+        return "|".join((self.kind, source.path if source and source.path else "", str(source.line if source and source.line is not None else ""), str(source.column if source and source.column is not None else ""), self.name or self.linkage_name or ""))
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "anchor_id": self.anchor_id,
@@ -272,6 +277,7 @@ class Anchor:
             "die_offset": self.die_offset,
             "event_kind": self.event_kind,
             "recovery": self.recovery,
+            "semantic_key": self.semantic_key,
         }
 
     @classmethod
@@ -1360,16 +1366,7 @@ class PcTraceCollector:
 
 
 def _anchor_semantic_key(anchor: Anchor) -> str:
-    source = anchor.source
-    return "|".join(
-        (
-            anchor.kind,
-            source.path if source and source.path else "",
-            str(source.line if source and source.line is not None else ""),
-            str(source.column if source and source.column is not None else ""),
-            anchor.name or anchor.linkage_name or "",
-        )
-    )
+    return anchor.semantic_key
 
 
 def _as_event(value: OccurrenceEvent | Mapping[str, Any]) -> OccurrenceEvent:

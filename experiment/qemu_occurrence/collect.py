@@ -46,6 +46,11 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def tool_version(path: Path) -> str:
+    completed = subprocess.run([str(path), "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
+    return completed.stdout.splitlines()[0]
+
+
 def build_plugin(args: argparse.Namespace) -> int:
     glib_cflags = subprocess.run(
         ["pkg-config", "--cflags", "glib-2.0"],
@@ -81,7 +86,7 @@ def select_entries(catalog: AnchorCatalog, anchor_ids: set[str], anchor_names: s
     matched_names: set[str] = set()
     matched_ids: set[str] = set()
     for anchor in catalog.anchors:
-        if not anchor.ranges or anchor.kind not in {"function", "symbol"}:
+        if not anchor.ranges or anchor.kind not in {"function", "symbol", "loop", "loop_candidate"}:
             continue
         if anchor.anchor_id not in anchor_ids and anchor.name not in anchor_names:
             continue
@@ -94,8 +99,14 @@ def select_entries(catalog: AnchorCatalog, anchor_ids: set[str], anchor_names: s
         raise ValueError(f"anchors not found: ids={sorted(missing_ids)}, names={sorted(missing_names)}")
     if not selected:
         raise ValueError("at least one --anchor-id or --anchor-name is required")
+    all_at_pc: dict[int, list[Any]] = {}
+    for anchor in catalog.anchors:
+        if anchor.kind in {"function", "symbol", "loop", "loop_candidate"} and anchor.ranges:
+            all_at_pc.setdefault(min(item.start for item in anchor.ranges), []).append(anchor)
     by_pc: dict[int, Any] = {}
     for pc, anchor in selected:
+        if len({item.anchor_id for item in all_at_pc.get(pc, [])}) > 1:
+            raise ValueError(f"PC 0x{pc:x} maps to multiple catalog anchors; watchlist is ambiguous")
         old = by_pc.get(pc)
         if old is not None and old.anchor_id != anchor.anchor_id:
             raise ValueError(f"PC 0x{pc:x} maps to multiple selected anchors")
@@ -120,15 +131,7 @@ def write_watchlist(
         source = anchor.source.to_dict() if anchor.source else None
         watches[watch_id] = {
             "anchor_id": anchor.anchor_id,
-            "semantic_key": "|".join(
-                (
-                    anchor.kind,
-                    anchor.source.path if anchor.source and anchor.source.path else "",
-                    str(anchor.source.line if anchor.source and anchor.source.line is not None else ""),
-                    str(anchor.source.column if anchor.source and anchor.source.column is not None else ""),
-                    anchor.name,
-                )
-            ),
+            "semantic_key": anchor.semantic_key,
             "confidence": anchor.confidence,
             "kind": anchor.kind,
             "name": anchor.name,
@@ -188,6 +191,8 @@ def collect(args: argparse.Namespace) -> int:
     elf = args.elf.resolve()
     catalog_path = args.catalog.resolve()
     input_manifest = args.manifest.resolve()
+    input_metadata = json.loads(input_manifest.read_text(encoding="utf-8"))
+    terminal_marker = args.terminal_marker or input_metadata.get("terminal_marker", "HIT GOOD TRAP")
     qemu = args.qemu.resolve()
     plugin = args.plugin.resolve()
     catalog = AnchorCatalog.load(catalog_path)
@@ -237,6 +242,11 @@ def collect(args: argparse.Namespace) -> int:
         samples = decode_trace(trace_path, watches, args.max_events)
         if status.get("events") != len(samples):
             raise RuntimeError(f"plugin event count disagrees with stream for run {run_index}")
+        stdout_text = stdout_path.read_text(encoding="utf-8", errors="replace")
+        stderr_text = stderr_path.read_text(encoding="utf-8", errors="replace")
+        terminal_observed = terminal_marker in stdout_text or terminal_marker in stderr_text
+        if not terminal_observed:
+            raise RuntimeError(f"qemu run {run_index} did not reach terminal marker {terminal_marker!r}")
         occurrence = collect_occurrence_trace(
             catalog,
             samples,
@@ -252,7 +262,8 @@ def collect(args: argparse.Namespace) -> int:
                 "raw_stream_sha256": sha256_file(trace_path),
                 "raw_stream_bytes": trace_path.stat().st_size,
                 "watchlist_manifest_sha256": sha256_file(watch_manifest_path),
-                "terminal_observed": True,
+                "terminal_marker": terminal_marker,
+                "terminal_observed": terminal_observed,
             }
         )
         occurrence.save(occurrence_path)
@@ -269,6 +280,7 @@ def collect(args: argparse.Namespace) -> int:
                 "occurrences_sha256": sha256_file(occurrence_path),
                 "stdout_sha256": sha256_file(stdout_path),
                 "stderr_sha256": sha256_file(stderr_path),
+                "terminal_observed": terminal_observed,
                 "plugin_status": status,
             }
         )
@@ -280,16 +292,29 @@ def collect(args: argparse.Namespace) -> int:
     run_manifest = {
         "schema_version": 1,
         "collector": "qemu-user-occurrence-plugin-v1",
+        "workload_id": args.workload_id or input_metadata.get("workload_id", "unknown"),
+        "build_id": args.build_id or input_metadata.get("build_id", sha256_file(elf)),
+        "run_id": args.run_id or input_metadata.get("run_id", f"{args.workload_id or input_metadata.get('workload_id', 'unknown')}-{args.build_id or input_metadata.get('build_id', 'build')}-run1"),
+        "input_id": args.input_id or input_metadata.get("input_id", sha256_file(input_manifest)),
+        "functional_path_id": args.functional_path_id or input_metadata.get("functional_path_id", "default"),
         "event_phase": "before_instruction",
         "occurrence_base": 0,
+        "icount_domain": "workload_relative_instructions",
+        "interval_instructions": args.interval_instructions,
+        "interval_index_base": 0,
         "args": guest_args,
         "environment": {key: os.environ[key] for key in args.record_env if key in os.environ},
+        "artifacts": input_metadata.get("artifacts", {}),
+        "tools": {"qemu": {"sha256": sha256_file(qemu), "version": tool_version(qemu)}, "plugin": {"sha256": sha256_file(plugin), "version": "qemu-user-occurrence-plugin-v1"}},
         "input_manifest_sha256": sha256_file(input_manifest),
         "elf_sha256": sha256_file(elf),
         "catalog_sha256": sha256_file(catalog_path),
         "watchlist_manifest_sha256": sha256_file(watch_manifest_path),
         "qemu_sha256": sha256_file(qemu),
         "plugin_sha256": sha256_file(plugin),
+        "terminal_marker": terminal_marker,
+        "terminal_observed": all(item["terminal_observed"] for item in run_records),
+        "manifest_sha256": sha256_file(input_manifest),
         "repeat_count": args.repeat,
         "normalized_trace_stable": stable,
         "stdout_stable": output_stable,
@@ -324,6 +349,13 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument("--max-events", type=int, default=10_000_000)
     run.add_argument("--max-per-watch", type=int, default=2**63 - 1)
     run.add_argument("--record-env", action="append", default=[])
+    run.add_argument("--terminal-marker")
+    run.add_argument("--workload-id")
+    run.add_argument("--build-id")
+    run.add_argument("--run-id")
+    run.add_argument("--input-id")
+    run.add_argument("--functional-path-id")
+    run.add_argument("--interval-instructions", type=int, default=20_000_000)
     run.add_argument("guest_args", nargs=argparse.REMAINDER)
     run.set_defaults(func=collect)
     return result

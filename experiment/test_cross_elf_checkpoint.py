@@ -5,7 +5,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from .cross_elf_checkpoint import build_checkpoint_correspondence, export_slices, sha256
+from .cross_elf_checkpoint import (
+    build_checkpoint_correspondence,
+    export_slices,
+    overlap,
+    select_monotonic_path,
+    sha256,
+)
 
 
 class CheckpointCorrespondenceTest(unittest.TestCase):
@@ -61,6 +67,24 @@ class CheckpointCorrespondenceTest(unittest.TestCase):
         self.assertEqual(result["recommended_mapping_count"], 1)
         self.assertEqual(result["candidate_only_mapping_count"], 1)
         self.assertEqual(result["mappings"][0]["target_collision_sources"], [1, 7])
+
+    def test_overlap_compares_distribution_shape_not_raw_count_multiset(self) -> None:
+        self.assertEqual(overlap([10, 20], [20, 10]), 1.0)
+        self.assertLess(overlap([20_000_000], [5_000_000] * 4), 0.8)
+
+    def test_select_monotonic_path_avoids_crossing_local_bests(self) -> None:
+        regions = [
+            {"candidates": [
+                {"target_point_b": 10, "score": 0.9},
+                {"target_point_b": 20, "score": 1.0},
+            ]},
+            {"candidates": [
+                {"target_point_b": 15, "score": 1.0},
+                {"target_point_b": 30, "score": 0.9},
+            ]},
+        ]
+        select_monotonic_path(regions)
+        self.assertEqual([region["best"]["target_point_b"] for region in regions], [10, 15])
 
 
 class SliceExportTest(unittest.TestCase):

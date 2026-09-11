@@ -53,7 +53,7 @@
 
 [`experiment/position_aligner/__main__.py`](experiment/position_aligner/__main__.py) 提供 prepared suite 的 replay 命令。
 
-需要注意，主入口 `cross_elf_checkpoint.py align` 当前使用较直接的“比例中心 + BBV count-multiset overlap + 邻域上下文 + 顺序过滤”方法；`position_aligner` 是更严格的稀疏全局方法。两者的接受数量不能直接混用。
+需要注意，旧入口 `cross_elf_checkpoint.py align` 使用“比例中心 + 自适应 BBV 形状相似度 + 邻域上下文 + 全局单调路径”方法，结果必须标记为 `bbv_candidate` 或 `interval_compatibility`；`position_aligner` 顶层 `PositionAligner` 和 [`progress_alignment.py`](experiment/progress_alignment.py) 才是动态工作进度主流程。两者的接受数量不能直接混用。BBV 结果仍然只是跨 ELF 的实验性位置代理，不是源码 occurrence 证明。
 
 ### 2.3 语义锚点和动态 occurrence
 

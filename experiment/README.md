@@ -88,7 +88,7 @@ without breaking replay.
 Useful controls:
 
 ```text
-align:      --workloads, --points, --radius, --context,
+align:      --workloads, --points, --radius, --max-radius, --context,
             --min-score, --min-margin
 checkpoint: --warmup, --boot-allowance, --generation-tail,
             --restore-instructions, --min-post-restore-overlap, --timeout
@@ -99,9 +99,11 @@ export-slices: --include-all-materialized, --mode {symlink,copy}
 
 `checkpoint` refuses rejected candidates by default. `--force` exists only for
 explicit diagnostic experiments and does not upgrade the result confidence.
-After restore, every compared window must meet the default 0.5 overlap floor;
-otherwise the result is `rejected_post_restore_divergence` even when both
-checkpoints are structurally valid and executable.
+After restore, every workload window after the initial restore window must meet
+the default 0.5 BBV-shape-overlap floor; otherwise the result is
+`rejected_post_restore_divergence` even when both checkpoints are structurally
+valid and executable. The initial window is excluded because it can contain
+restorer activity.
 
 `export-slices` uses `checkpoint-all-result.json` as its authoritative input
 and verifies both checkpoints in every selected pair against their recorded
@@ -156,6 +158,17 @@ Machine-readable aggregate results are in
 `multi-workload/results/suite-report.json`.
 
 ## PositionAligner roadmap artifacts
+
+动态工作进度主入口是 [`progress_alignment.py`](progress_alignment.py)。它冻结
+`BuildRun`、`ProgressEvent`、`Position`、`Correspondence` 协议，并按
+`freeze collect-events bind-source align-progress materialize-target validate report`
+分离产物。动态位置结果与旧 `cross_elf_checkpoint.py` 的 interval/BBV 兼容结果
+不混合统计；后者始终标记为实验性候选。
+
+动态入口已在短程 `lbm` A/B（1 timestep、no obstacle）上完成 QEMU 事件、source
+绑定、跨 ELF occurrence 对齐、B-native occurrence-0 checkpoint 和 bounded restore
+闭环。该样本没有覆盖 reference 3000-step terminal workload，因此不能推出性能
+代表性或 production eligibility。
 
 The separated M1 BBV locator and its current 209-point replay are under
 `position_aligner/`.  The replay reports 62 position-level matches and 147

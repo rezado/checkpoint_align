@@ -181,9 +181,64 @@ def collect_rows(path: Path, wanted: set[int]) -> tuple[dict[int, list[int]], in
     return rows, row_count
 
 
+def bbv_shape(row: list[int]) -> tuple[float, ...]:
+    total = sum(row)
+    return tuple(sorted((value / total for value in row), reverse=True)) if total else ()
+
+
+def shape_overlap(a_shape: tuple[float, ...], b_shape: tuple[float, ...]) -> float:
+    if not a_shape and not b_shape:
+        return 1.0
+    if not a_shape or not b_shape:
+        return 0.0
+    length = max(len(a_shape), len(b_shape))
+    shape_score = 1.0 - sum(
+        abs((a_shape[index] if index < len(a_shape) else 0.0)
+            - (b_shape[index] if index < len(b_shape) else 0.0))
+        for index in range(length)
+    ) / 2.0
+    block_score = 1.0 - abs(len(a_shape) - len(b_shape)) / length
+    return max(0.0, 0.8 * shape_score + 0.2 * block_score)
+
+
 def overlap(a: list[int], b: list[int]) -> float:
-    denominator = max(len(a), len(b))
-    return sum((Counter(a) & Counter(b)).values()) / denominator if denominator else 1.0
+    """Compare normalized BBV count shapes, independent of raw block IDs."""
+    return shape_overlap(bbv_shape(a), bbv_shape(b))
+
+
+def select_monotonic_path(regions: list[dict]) -> None:
+    """Select the highest-scoring strictly increasing target path."""
+    if not regions:
+        return
+    paths: list[list[tuple[float, int | None]]] = []
+    for index, region in enumerate(regions):
+        current: list[tuple[float, int | None]] = []
+        for candidate_index, candidate in enumerate(region["candidates"]):
+            best_score = candidate["score"] if index == 0 else float("-inf")
+            best_previous = None
+            if index:
+                previous_region = regions[index - 1]
+                for previous_index, previous_candidate in enumerate(previous_region["candidates"]):
+                    if previous_candidate["target_point_b"] >= candidate["target_point_b"]:
+                        continue
+                    previous_score = paths[index - 1][previous_index][0]
+                    score = previous_score + candidate["score"]
+                    if score > best_score:
+                        best_score = score
+                        best_previous = previous_index
+            current.append((best_score, best_previous))
+        paths.append(current)
+    selected = max(range(len(paths[-1])), key=lambda item: paths[-1][item][0])
+    if paths[-1][selected][0] == float("-inf"):
+        raise ValueError("no strictly monotonic target path exists")
+    for index in range(len(regions) - 1, -1, -1):
+        region = regions[index]
+        region["best"] = region["candidates"][selected]
+        region["path_score"] = paths[index][selected][0]
+        previous = paths[index][selected][1]
+        if previous is None:
+            break
+        selected = previous
 
 
 def align_workload(
@@ -193,6 +248,7 @@ def align_workload(
     target_side: str,
     interval: int,
     radius: int,
+    max_radius: int,
     context: int,
     min_score: float,
     min_margin: float,
@@ -213,12 +269,15 @@ def align_workload(
     a_total = instruction_total(a["json"], workload)
     b_total = instruction_total(b["json"], workload)
     ratio = b_total / a_total
+    if radius < 0 or max_radius < radius:
+        raise ValueError("max_radius must be greater than or equal to radius")
     plans = []
     a_wanted = set()
     b_wanted = set()
     for point, cluster in points:
         center = round(point * ratio)
-        candidates = range(max(0, center - radius), center + radius + 1)
+        search_radius = radius
+        candidates = range(max(0, center - search_radius), center + search_radius + 1)
         plans.append((point, cluster, center, list(candidates)))
         for delta in range(-context, context + 1):
             if point + delta >= 0:
@@ -229,6 +288,8 @@ def align_workload(
 
     a_rows, a_row_count = collect_rows(a["bbv"], a_wanted)
     b_rows, b_row_count = collect_rows(b["bbv"], b_wanted)
+    a_shapes = {point: bbv_shape(row) for point, row in a_rows.items()}
+    b_shapes = {point: bbv_shape(row) for point, row in b_rows.items()}
     regions = []
     for point, cluster, center, candidates in plans:
         if point not in a_rows:
@@ -237,13 +298,15 @@ def align_workload(
         for candidate in candidates:
             if candidate not in b_rows:
                 continue
-            interval_score = overlap(a_rows[point], b_rows[candidate])
+            interval_score = shape_overlap(a_shapes[point], b_shapes[candidate])
             context_scores = []
             for delta in range(-context, context + 1):
                 if delta == 0:
                     continue
                 if point + delta in a_rows and candidate + delta in b_rows:
-                    context_scores.append(overlap(a_rows[point + delta], b_rows[candidate + delta]))
+                    context_scores.append(
+                        shape_overlap(a_shapes[point + delta], b_shapes[candidate + delta])
+                    )
             context_score = sum(context_scores) / len(context_scores) if context_scores else interval_score
             score = 0.7 * interval_score + 0.3 * context_score
             scored.append({
@@ -261,25 +324,43 @@ def align_workload(
         scored.sort(key=lambda item: (-item["score"], abs(item["target_point_b"] - center)))
         if not scored:
             raise ValueError(f"{workload}: no {target_side} BBV candidates around {source_side} point {point}")
-        best = scored[0]
-        runner_up_score = scored[1]["score"] if len(scored) > 1 else 0.0
-        margin = best["score"] - runner_up_score
-        accepted = best["score"] >= min_score and margin >= min_margin
         regions.append({
             "source_point_a": point,
             "source_point": point,
             "source_side": source_side,
             "source_cluster_a": cluster,
             "ratio_search_center_b": center,
-            "best": best,
-            "runner_up_score": runner_up_score,
-            "margin": margin,
-            "status": "accepted_experimental" if accepted else "rejected_ambiguous",
-            "confidence": "L" if accepted else "R",
+            "best": scored[0],
+            "runner_up_score": 0.0,
+            "margin": 0.0,
+            "status": "rejected_ambiguous",
+            "confidence": "R",
             "candidates": scored,
         })
 
     ordered = sorted(regions, key=lambda item: item["source_point_a"])
+    edge_points = {
+        region["source_point_a"]
+        for region in ordered
+        if abs(region["best"]["target_point_b"] - region["ratio_search_center_b"]) == radius
+    }
+    if edge_points and radius < max_radius:
+        return align_workload(
+            suite, workload, source_side, target_side, interval, max_radius, max_radius,
+            context, min_score, min_margin, requested_points,
+        )
+    select_monotonic_path(ordered)
+    for region in ordered:
+        scores = sorted(
+            (candidate["score"] for candidate in region["candidates"]
+             if candidate["target_point_b"] != region["best"]["target_point_b"]),
+            reverse=True,
+        )
+        region["runner_up_score"] = scores[0] if scores else 0.0
+        region["margin"] = region["best"]["score"] - region["runner_up_score"]
+        accepted = region["best"]["score"] >= min_score and region["margin"] >= min_margin
+        region["status"] = "accepted_experimental" if accepted else "rejected_ambiguous"
+        region["confidence"] = "L" if accepted else "R"
     last_target = -1
     for region in ordered:
         target = region["best"]["target_point_b"]
@@ -304,8 +385,10 @@ def align_workload(
         "total_instruction_ratio": ratio,
         "source_bbv_rows": a_row_count,
         "target_bbv_rows": b_row_count,
-        "method": "BBV count-multiset overlap with same-offset temporal context",
+        "method": "normalized BBV shape overlap with global monotonic path",
+        "result_kind": "bbv_candidate",
         "search_radius": radius,
+        "max_search_radius": max_radius,
         "context_radius": context,
         "thresholds": {"min_score": min_score, "min_margin": min_margin},
         "semantic_anchor_trace_present": False,
@@ -338,7 +421,7 @@ def command_align(args: argparse.Namespace) -> None:
     for workload in workloads:
         result = align_workload(
             suite, workload, source_side, target_side, manifest["interval_instructions"], args.radius,
-            args.context, args.min_score, args.min_margin, args.points,
+            args.max_radius, args.context, args.min_score, args.min_margin, args.points,
         )
         summaries.append(alignment_summary(result))
     write_json(suite / "results" / "alignment-summary.json", summaries)
@@ -506,7 +589,7 @@ def compare_profiles(a_path: Path, b_path: Path) -> list[dict]:
     return [
         {
             "window": index,
-            "count_multiset_overlap": overlap(a_row, b_row),
+            "bbv_shape_overlap": overlap(a_row, b_row),
             "source_vector_sum": sum(a_row),
             "target_vector_sum": sum(b_row),
             "source_nonzero_blocks": len(a_row),
@@ -571,8 +654,9 @@ def command_checkpoint(args: argparse.Namespace) -> None:
         interval, args.restore_instructions, args.timeout,
     )
     post_restore = compare_profiles(a_profile, b_profile)
+    validation_windows = post_restore[1:] or post_restore
     minimum_post_restore_overlap = min(
-        (window["count_multiset_overlap"] for window in post_restore), default=0.0
+        (window["bbv_shape_overlap"] for window in validation_windows), default=0.0
     )
     status = (
         "validated_experimental"
@@ -774,8 +858,9 @@ def command_checkpoint_all(args: argparse.Namespace) -> None:
                 args.restore_instructions, args.timeout,
             )
             post_restore = compare_profiles(source_profile, target_profile)
+            validation_windows = post_restore[1:] or post_restore
             minimum_overlap = min(
-                (window["count_multiset_overlap"] for window in post_restore), default=0.0
+                (window["bbv_shape_overlap"] for window in validation_windows), default=0.0
             )
             pair.update({
                 "source_restore": source_restore,
@@ -1038,7 +1123,7 @@ def command_report(args: argparse.Namespace) -> None:
         for result_path in sorted((suite / "results" / workload).glob("*/checkpoint-result.json")):
             result = read_json(result_path)
             overlaps = [
-                window["count_multiset_overlap"]
+                window.get("bbv_shape_overlap", window.get("count_multiset_overlap"))
                 for window in result.get("post_restore_windows", [])
             ]
             report["checkpoint_experiments"].append({
@@ -1097,6 +1182,7 @@ def build_parser() -> argparse.ArgumentParser:
     align.add_argument("--workloads", nargs="+")
     align.add_argument("--points", nargs="+", type=int)
     align.add_argument("--radius", type=int, default=8)
+    align.add_argument("--max-radius", type=int, default=128)
     align.add_argument("--context", type=int, default=2)
     align.add_argument("--min-score", type=float, default=0.55)
     align.add_argument("--min-margin", type=float, default=0.10)

@@ -22,14 +22,16 @@ from .bbv import (
     OUT_OF_TRACE,
     POST_ALIGN_DIVERGENCE,
     POLICY_VERSION,
-    PositionAligner,
+    PositionAligner as BbvPositionAligner,
     PositionIndex,
     RunSpec,
     SEARCH_TRUNCATED,
     SCHEMA_VERSION,
-    align,
+    align as bbv_align,
     build_index,
 )
+from .align import PositionAligner
+from .protocol import AlignmentResult, BuildRun, Correspondence, Position, ProgressEvent, validate_events, validate_position, validate_run
 
 
 def policy_schema(policy: AlignmentPolicy | None = None) -> dict:
@@ -91,4 +93,18 @@ __all__ = [
     "NONDETERMINISTIC_TRACE",
     "ARTIFACT_MISMATCH",
     "EVIDENCE_COLLECTION_FAILED",
+    "BuildRun",
+    "ProgressEvent",
+    "Position",
+    "Correspondence",
+    "AlignmentResult",
+    "BbvPositionAligner",
+    "validate_run",
+    "validate_events",
+    "validate_position",
 ]
+
+# Importing the internal ``align`` module installs it as a package attribute;
+# restore the legacy callable explicitly while the class owns the new deep
+# dynamic interface.
+align = bbv_align

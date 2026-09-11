@@ -39,3 +39,23 @@
 - 已定位 workload-builder 正式 metadata 生成逻辑和 `checkpoints_all.json` 样例，确认 `{workload: {insts, points}}` schema。
 - `export-slices` 已扩展为分别输出 A/B checkpoint、cluster、weights 和 `checkpoints.json`，并实际生成 mcf `aligned-slices-paired` 共 22 对。
 - A/B 两侧各 22 个 checkpoint 的 hash、相对链接、`checkpoints.json` point 集合、`simpoints0`/`weights0` 和 zstd 完整性复核均通过；20 个 unittest 通过。
+
+## 2026-09-11
+
+- 已读取用户指定的 goal objective，确认需实现 P0-P5 动态工作进度主流程，同时保留旧 interval/BBV 入口。
+- 已完整读取 planning-with-files 技能并恢复现有计划上下文。
+- 已检查仓库根、分支、Git 状态和 worktree；在当前 checkout 增量实现，保留 4 个现有修改文件。
+- 已查阅此前跨 ELF 调研记忆：语义锚点加动态 occurrence 才是位置身份，缺少独立 occurrence 证据时必须显式失败。
+- 下一步：审计现有协议、DWARF/QEMU collector、M0 fixture 和测试，确定最小可闭环实现。
+- 基线 `python3 -m unittest discover -v` 因默认搜索根目录未发现测试；改用显式测试模块，不重复该命令。
+- 新增协议、动态 event index/candidate/align 四模块骨架；首次定向测试发现 Python 子模块名覆盖旧 `align` 函数，已定位为包导出冲突，下一步修复并强化 top-2 DP。
+- 完成 P0-P3：新增严格 BuildRun/ProgressEvent/Position/Correspondence 协议、event index、semantic candidate、gap/warp top-2 单调 DP、预算和证据失败 typed reject、source binder 与六子命令薄入口。
+- QEMU collector 现在记录真实 terminal marker 命中而非固定 true，并拒绝同 PC 多 anchor watchlist；DWARF catalog 每个 anchor 输出 semantic_key。
+- 38 个 Python 定向测试和 M0 fixture 校验通过。
+- 使用已有 libquantum 23,501-event 不同 ELF trace 完成真实只读回放：source snapped delta +17663589，target occurrence 6594/PC 75036，生成 event-only B semantic target。
+- 运行清单适配器现在要求 dynamic_execution/complete 证据，拒绝静态事件列表；补充 unknown field/hash、功能路径不一致、删除目标事件和多 anchor 同 PC 负例。
+- 当前环境未安装 `ruff`，静态验证改用 `py_compile` 与 `git diff --check`。
+- `lbm` 短程 collector 实际完成 A/B 各 3 个稳定事件和 terminal marker；一次 CLI 输入路径误用已定位，改用规范 collect-events envelope。
+- 完成 P4/P5：`materialize-target` 生成 NEMU `checkpoint-on-occurrence` 配置和 sidecar；三个独立 validator 分别输出 restore/cross-build/coverage；真实 lbm B-native occurrence-0 checkpoint 与 bounded restore 已通过，terminal 未达成并保持明确证据缺口。
+- 最终验证：44 个 unittest 全部通过，M0 fixture status=ok，Python `py_compile`、`git diff --check` 通过，NEMU `NEMU_HOME=$PWD make -j4` 通过。
+- 下一步：编译检查 NEMU semantic-position，重跑已有真实 checkpoint 独立验证，再完善文档和最终回归。
