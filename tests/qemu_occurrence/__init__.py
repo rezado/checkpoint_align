@@ -1,0 +1,1 @@
+"""QEMU occurrence adapter tests."""

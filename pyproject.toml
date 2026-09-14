@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "checkpoint-align"
+version = "0.1.0"
+description = "Dynamic progress-driven checkpoint alignment across ELF builds"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.scripts]
+checkpoint-align = "checkpoint_align.cli:main"
+
+[tool.setuptools.package-data]
+"checkpoint_align.qemu_occurrence" = ["occurrence_plugin.c"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
