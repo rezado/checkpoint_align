@@ -714,6 +714,32 @@ def _parse_symbols(
     return list(unique.values())
 
 
+def _symbol_covered_by_dwarf(
+    symbol: Mapping[str, Any],
+    dwarf_function_ranges: Sequence[tuple[int, int, Anchor]],
+) -> bool:
+    """Return True when a symbolized range is already covered by a DWARF function.
+
+    Symbol-table ranges are a fallback for code the DWARF cannot describe.  A
+    concrete out-of-line instance of an optimized function often carries only
+    ``DW_AT_abstract_origin`` and therefore resolves to no ``DW_AT_name``; its
+    DWARF anchor still spans exactly the same addresses.  Emitting a second
+    symbol anchor for that span turns one source marker into an ambiguous pair
+    and the boundary resolver rejects the point as ``UNSUPPORTED_INLINE_CONTEXT``.
+    """
+
+    value = int(symbol["value"])
+    end = int(symbol["end"])
+    for start, stop, anchor in dwarf_function_ranges:
+        if not (value < stop and start < end):
+            continue
+        if anchor.name == symbol["name"] or anchor.source is None:
+            return True
+        if start == value and stop == end:
+            return True
+    return False
+
+
 def _stable_anchor_id(kind: str, identity: str) -> str:
     digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:20]
     return f"{kind}:{digest}"
@@ -1030,11 +1056,7 @@ def build_catalog(
     # debug regions.  A matching DWARF function wins at an overlapping address.
     for symbol in symbols:
         ranges = (AddressRange(symbol["value"], symbol["end"]),)
-        overlaps_dwarf = any(
-            symbol["value"] < end and start < symbol["end"] and (anchor.name == symbol["name"] or anchor.source is None)
-            for start, end, anchor in dwarf_function_ranges
-        )
-        if overlaps_dwarf:
+        if _symbol_covered_by_dwarf(symbol, dwarf_function_ranges):
             continue
         source = SourceLocation(symbol["source_unit"], None, None, None) if symbol.get("source_unit") else None
         identity = "|".join(("symbol", source.path if source else "", symbol.get("name") or "", hex(symbol["value"])))

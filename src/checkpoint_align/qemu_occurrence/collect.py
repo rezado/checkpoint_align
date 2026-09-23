@@ -227,6 +227,7 @@ def collect(args: argparse.Namespace) -> int:
             or status.get("budget_exceeded")
             or status.get("write_error")
             or status.get("close_error")
+            or status.get("truncated_watch_ids")
         ):
             raise RuntimeError(f"invalid plugin status for run {run_index}: {status}")
         samples = decode_trace(trace_path, watches, args.max_events)
@@ -303,6 +304,7 @@ def collect(args: argparse.Namespace) -> int:
         "plugin_sha256": sha256_file(plugin),
         "terminal_marker": terminal_marker,
         "terminal_observed": all(item["terminal_observed"] for item in run_records),
+        "event_trace_sha256": sha256_file(output_dir / "occurrences.json"),
         "manifest_sha256": sha256_file(input_manifest),
         "repeat_count": args.repeat,
         "normalized_trace_stable": stable,

@@ -10,6 +10,8 @@ from checkpoint_align.dwarf_source import (
     Anchor,
     AnchorCatalog,
     OccurrenceEvent,
+    SourceLocation,
+    _symbol_covered_by_dwarf,
     align_occurrence_sequences,
     align_occurrence_sequences_segmented,
     collect_occurrence_trace,
@@ -59,6 +61,46 @@ def _catalog() -> AnchorCatalog:
 
 
 class DwarfSourceTest(unittest.TestCase):
+    def _dwarf_function(self, *, name: str | None, source: SourceLocation | None, start=0x1000, end=0x1040) -> Anchor:
+        return Anchor(
+            anchor_id="function:fixture",
+            kind="function",
+            name=name,
+            linkage_name=name,
+            source=source,
+            ranges=(AddressRange(start, end),),
+            confidence="M",
+            origin="dwarf",
+            inline_chain=("<artificial>",),
+        )
+
+    def test_symbol_alias_over_identical_range_is_dropped_when_dwarf_has_no_name(self) -> None:
+        # A concrete out-of-line instance carries DW_AT_abstract_origin only, so
+        # the DWARF anchor resolves to no name while spanning the same addresses.
+        anchor = self._dwarf_function(name=None, source=SourceLocation("<artificial>", None, None, None))
+        symbol = {"value": 0x1000, "end": 0x1040, "name": "sort_basket"}
+        self.assertTrue(_symbol_covered_by_dwarf(symbol, [(0x1000, 0x1040, anchor)]))
+
+    def test_symbol_alias_over_identical_range_is_dropped_when_names_differ(self) -> None:
+        anchor = self._dwarf_function(name="mutex_stats_read_global", source=SourceLocation("src/stats.c", 12, 3, 0))
+        symbol = {"value": 0x1000, "end": 0x1040, "name": "mutex_stats_read_arena"}
+        self.assertTrue(_symbol_covered_by_dwarf(symbol, [(0x1000, 0x1040, anchor)]))
+
+    def test_symbol_alias_is_dropped_when_dwarf_anchor_has_no_source(self) -> None:
+        anchor = self._dwarf_function(name="renamed", source=None)
+        symbol = {"value": 0x1000, "end": 0x1040, "name": "other"}
+        self.assertTrue(_symbol_covered_by_dwarf(symbol, [(0x1000, 0x1040, anchor)]))
+
+    def test_symbol_inside_a_wider_named_dwarf_function_is_kept(self) -> None:
+        anchor = self._dwarf_function(name="solve", source=SourceLocation("src/a.c", 3, 1, 0), start=0x1000, end=0x1200)
+        symbol = {"value": 0x1080, "end": 0x1100, "name": "inlined_helper"}
+        self.assertFalse(_symbol_covered_by_dwarf(symbol, [(0x1000, 0x1200, anchor)]))
+
+    def test_disjoint_symbol_is_kept(self) -> None:
+        anchor = self._dwarf_function(name="solve", source=SourceLocation("src/a.c", 3, 1, 0), start=0x2000, end=0x2100)
+        symbol = {"value": 0x1000, "end": 0x1040, "name": "other"}
+        self.assertFalse(_symbol_covered_by_dwarf(symbol, [(0x2000, 0x2100, anchor)]))
+
     def test_line_end_sequence_breaks_source_mapping_range(self) -> None:
         text = '''
 file_names[  1]:

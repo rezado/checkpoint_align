@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -20,6 +21,12 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def materialization_fingerprint(run_manifest: Mapping[str, Any], command: list[str], target: Mapping[str, Any]) -> str:
+    semantic_target = {key: target[key] for key in ("build_id", "anchor_id", "occurrence", "pc")}
+    payload = json.dumps({"run_manifest": dict(run_manifest), "command": list(command), "target": semantic_target}, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _checkpoint_icount(path: Path) -> int | None:
@@ -167,10 +174,14 @@ def run_nemu_target(target_path: str | Path, command: list[str], *, run_manifest
     """Run NEMU from the B workload start and attach a checkpoint sidecar."""
 
     target_path = Path(target_path)
-    output = Path(output_dir)
-    output.mkdir(parents=True, exist_ok=True)
+    root = Path(output_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    output = Path(tempfile.mkdtemp(prefix="attempt-", dir=root))
     target_document = json.loads(target_path.read_text(encoding="utf-8"))
     target = target_document["target"]
+    if target_document.get("run_manifest_sha256") != run_manifest.get("manifest_sha256"):
+        raise ValueError("target contract is not bound to the current run manifest")
+    fingerprint = materialization_fingerprint(run_manifest, command, target)
     hit_path = output / "semantic-hit.json"
     config_path = write_nemu_config(output / "semantic-position.txt", target, hit_path=hit_path, interval_instructions=int(run_manifest["interval_instructions"]))
     command = [*_checkpoint_command(command, output, run_manifest), "--semantic-position", str(config_path)]
@@ -185,6 +196,8 @@ def run_nemu_target(target_path: str | Path, command: list[str], *, run_manifest
         "stdout_sha256": _sha256(stdout_path),
         "stderr_sha256": _sha256(stderr_path),
         "checkpoint_sidecar": None,
+        "run_manifest_sha256": run_manifest.get("manifest_sha256"),
+        "run_fingerprint": fingerprint,
     }
     checkpoints = sorted(output.glob("**/*memory*"))
     hit = json.loads(hit_path.read_text(encoding="utf-8")) if hit_path.is_file() else None
@@ -196,7 +209,7 @@ def run_nemu_target(target_path: str | Path, command: list[str], *, run_manifest
         if hit["occurrence"] != target["occurrence"] or hit["pc"] != target["pc"]:
             raise RuntimeError("NEMU semantic hit does not match requested target")
         sidecar = output / "checkpoint-sidecar.json"
-        sidecar.write_text(json.dumps({"schema_version": 1, "build_id": target["build_id"], "run_id": run_manifest["run_id"], "anchor_id": target["anchor_id"], "occurrence": hit["occurrence"], "pc": hit["pc"], "workload_icount": hit["workload_icount"], "interval": hit["interval"], "offset": hit["offset"], "checkpoint": str(checkpoint), "checkpoint_sha256": _sha256(checkpoint), "marker_consumed": False}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        sidecar.write_text(json.dumps({"schema_version": 1, "build_id": target["build_id"], "run_id": run_manifest["run_id"], "run_manifest_sha256": run_manifest.get("manifest_sha256"), "run_fingerprint": fingerprint, "anchor_id": target["anchor_id"], "occurrence": hit["occurrence"], "pc": hit["pc"], "workload_icount": hit["workload_icount"], "interval": hit["interval"], "offset": hit["offset"], "checkpoint": str(checkpoint), "checkpoint_sha256": _sha256(checkpoint), "marker_consumed": False}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         result["checkpoint_sidecar"] = str(sidecar)
     (output / "materialization.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return result
@@ -207,8 +220,12 @@ def run_nemu_targets(targets: list[Mapping[str, Any]], command: list[str], *, ru
 
     if not targets:
         raise ValueError("at least one target is required")
-    output = Path(output_dir)
-    output.mkdir(parents=True, exist_ok=True)
+    root = Path(output_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    output = Path(tempfile.mkdtemp(prefix="attempt-", dir=root))
+    fingerprints = {str(item["checkpoint_id"]): materialization_fingerprint(run_manifest, command, item["target"]) for item in targets}
+    if any(item["target"].get("build_id") != run_manifest.get("build_id") for item in targets):
+        raise ValueError("target position is not bound to the current run manifest")
     hit_path = output / "semantic-hits.json"
     config_path = write_nemu_batch_config(
         output / "semantic-position.txt",
@@ -240,6 +257,7 @@ def run_nemu_targets(targets: list[Mapping[str, Any]], command: list[str], *, ru
                 "hit": hit,
                 "checkpoint": str(checkpoint),
                 "checkpoint_sha256": _sha256(checkpoint),
+                "run_fingerprint": fingerprints[str(checkpoint_id)],
             }
     result = {
         "schema_version": 1,
@@ -249,6 +267,8 @@ def run_nemu_targets(targets: list[Mapping[str, Any]], command: list[str], *, ru
         "stdout_sha256": _sha256(stdout_path),
         "stderr_sha256": _sha256(stderr_path),
         "targets": materialized,
+        "run_manifest_sha256": run_manifest.get("manifest_sha256"),
+        "attempt_dir": str(output),
     }
     (output / "materialization.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return result

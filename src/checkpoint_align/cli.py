@@ -20,7 +20,7 @@ from checkpoint_align.position_aligner import (
     PositionAligner,
     ProgressEvent,
 )
-from checkpoint_align.position_aligner.materialize import run_nemu_target, run_nemu_targets, write_target
+from checkpoint_align.position_aligner.materialize import materialization_fingerprint, run_nemu_target, run_nemu_targets, write_target
 from checkpoint_align.position_aligner.source_boundary import BoundaryPolicy, CheckpointPoint, NemuSourceProbeRunner, SourceBoundaryResolver
 from checkpoint_align.position_aligner.validation import validate_coverage, validate_cross_build, validate_restore
 
@@ -114,21 +114,31 @@ def command_collect_events(args: argparse.Namespace) -> int:
     expected_identity = {run.build_id, f"sha256:{run.elf_sha256}", run.elf_sha256}
     if trace.build_identity not in expected_identity or trace.unmatched_samples or trace.event_phase != run.event_phase:
         raise ValueError("occurrence trace does not match BuildRun or is incomplete")
+    trace_hash = _sha256(args.trace)
+    if run.event_trace_sha256 is not None and run.event_trace_sha256 != trace_hash:
+        raise ValueError("occurrence trace hash does not match BuildRun")
     raw = _read(args.run_manifest)
     terminal_marker = args.terminal_marker or raw.get("terminal_marker")
     terminal_complete = raw.get("terminal_observed") is True
-    if terminal_marker and not terminal_complete:
+    runs = raw.get("runs")
+    if not isinstance(runs, list) or not runs:
+        runs = []
+    if terminal_marker and not terminal_complete and runs:
         run_dir = args.run_manifest.parent
         terminal_complete = all(
             terminal_marker in (run_dir / f"stdout-{record['run_index']}.log").read_text(encoding="utf-8", errors="replace")
             or terminal_marker in (run_dir / f"stderr-{record['run_index']}.log").read_text(encoding="utf-8", errors="replace")
-            for record in raw.get("runs", ())
+            for record in runs
         )
-    plugin_complete = terminal_complete and all(record.get("exit_status") == 0 and record.get("plugin_status", {}).get("vcpus") == 1 and not record.get("plugin_status", {}).get("budget_exceeded") and not record.get("plugin_status", {}).get("write_error") and not record.get("plugin_status", {}).get("close_error") for record in raw.get("runs", ()))
+    trace_hash_match = (run.event_trace_sha256 == trace_hash) if run.event_trace_sha256 is not None else all(record.get("occurrences_sha256") == trace_hash for record in runs)
+    plugin_complete = bool(runs) and trace_hash_match and terminal_complete and all(record.get("exit_status") == 0 and record.get("plugin_status", {}).get("vcpus") == 1 and not record.get("plugin_status", {}).get("budget_exceeded") and not record.get("plugin_status", {}).get("write_error") and not record.get("plugin_status", {}).get("close_error") and not record.get("plugin_status", {}).get("truncated_watch_ids") for record in runs)
     events = []
     for event in trace.events:
-        events.append(ProgressEvent(run.build_id, run.run_id, event.anchor_id, event.semantic_key or event.anchor_id, event.occurrence, event.pc or 0, event.workload_icount, {"source": event.source if hasattr(event, "source") else None}).to_dict())
-    _write(args.output, {"schema_version": 1, "evidence_kind": "dynamic_execution", "complete": plugin_complete, "run": run.to_dict(), "events": events, "source_trace_sha256": _sha256(args.trace)})
+        context = {}
+        if getattr(event, "context", ()):
+            context["trace_context"] = list(event.context)
+        events.append(ProgressEvent(run.build_id, run.run_id, event.anchor_id, event.semantic_key or event.anchor_id, event.occurrence, event.pc or 0, event.workload_icount, context).to_dict())
+    _write(args.output, {"schema_version": 1, "evidence_kind": "dynamic_execution", "complete": plugin_complete, "run": run.to_dict(), "events": events, "source_trace_sha256": trace_hash})
     return 0
 
 
@@ -202,11 +212,15 @@ def command_align_progress(args: argparse.Namespace) -> int:
 
 def command_materialize(args: argparse.Namespace) -> int:
     result = _read(args.alignment)
+    if result.get("status") != "matched":
+        raise ValueError("only a matched alignment can be materialized")
     target = result.get("correspondence", {}).get("target")
     if not target:
         raise ValueError("alignment has no B target to materialize")
     run_document = _read(args.run_manifest)
     run = run_document.get("run", run_document)
+    if not _bound_semantic_validation(result.get("semantic_validation"), result.get("source", {}), target, run):
+        raise ValueError("alignment requires bound validated semantic evidence before materialization")
     target_path = write_target(args.target, target, run_manifest=run)
     if not args.command:
         return 0
@@ -218,8 +232,10 @@ def command_materialize(args: argparse.Namespace) -> int:
 
 
 def _batch_result(items: list[dict[str, Any]], *, plan_only: bool) -> dict[str, Any]:
-    counts = {status: sum(item["status"] == status for item in items) for status in ("aligned", "materialized", "reused", "rejected", "failed")}
-    complete = counts["rejected"] == 0 and counts["failed"] == 0
+    counts = {status: sum(item["status"] == status for item in items) for status in ("aligned", "candidate", "materialized", "reused", "rejected", "failed")}
+    counts["semantic_validated"] = sum(item.get("semantic_validation") == "validated" for item in items)
+    counts["restore_validated"] = sum(item.get("restore_status") == "validated" for item in items)
+    complete = counts["candidate"] == 0 and counts["rejected"] == 0 and counts["failed"] == 0
     return {
         "schema_version": 1,
         "status": ("planned" if plan_only else "complete") if complete else "partial",
@@ -228,7 +244,35 @@ def _batch_result(items: list[dict[str, Any]], *, plan_only: bool) -> dict[str, 
     }
 
 
-def _resume_sidecar(output_dir: Path, target: dict[str, Any]) -> Path | None:
+def _bound_semantic_validation(value: Any, source_position: dict[str, Any], target_position: dict[str, Any], run_manifest: dict[str, Any]) -> bool:
+    if not isinstance(value, dict) or value.get("status") != "validated":
+        return False
+    required = {"alignment_id", "source_run_id", "target_run_id", "source_event", "target_event", "source_context", "target_context", "evidence_sha256"}
+    if not required.issubset(value) or value.get("target_run_id") != run_manifest.get("run_id"):
+        return False
+    if not isinstance(value["source_event"], dict) or not isinstance(value["target_event"], dict):
+        return False
+    if not isinstance(value["source_context"], dict) or not isinstance(value["target_context"], dict):
+        return False
+    if any(not isinstance(value[name], str) or not value[name] for name in ("alignment_id", "source_run_id", "target_run_id")):
+        return False
+    evidence_hash = value["evidence_sha256"]
+    if not isinstance(evidence_hash, str) or len(evidence_hash) != 64:
+        return False
+    try:
+        int(evidence_hash, 16)
+    except ValueError:
+        return False
+    source_identity = (source_position.get("anchor_id"), source_position.get("occurrence"))
+    target_identity = (target_position.get("anchor_id"), target_position.get("occurrence"))
+    if (value["source_event"].get("anchor_id"), value["source_event"].get("occurrence")) != source_identity:
+        return False
+    if (value["target_event"].get("anchor_id"), value["target_event"].get("occurrence")) != target_identity:
+        return False
+    return all(value["source_context"].get(key) == value["target_context"].get(key) for key in ("work_unit", "subphase"))
+
+
+def _resume_sidecar(output_dir: Path, target: dict[str, Any], run_manifest: dict[str, Any], command: list[str]) -> Path | None:
     sidecar_path = output_dir / "checkpoint-sidecar.json"
     if not sidecar_path.is_file():
         return None
@@ -237,12 +281,21 @@ def _resume_sidecar(output_dir: Path, target: dict[str, Any]) -> Path | None:
         raise ValueError("existing checkpoint sidecar uses obsolete per-position event_phase")
     for key in ("build_id", "anchor_id", "occurrence", "pc"):
         if sidecar.get(key) != target.get(key):
-            raise ValueError(f"existing checkpoint sidecar does not match target field {key}")
+            raise ValueError(f"existing checkpoint sidecar does not match bound field {key}")
+    expected_binding = {"run_id": run_manifest.get("run_id"), "run_manifest_sha256": run_manifest.get("manifest_sha256")}
+    for key, expected in expected_binding.items():
+        if sidecar.get(key) != expected:
+            raise ValueError(f"existing checkpoint sidecar does not match bound field {key}")
+    expected_fingerprint = materialization_fingerprint(run_manifest, command, target)
+    if sidecar.get("run_fingerprint") != expected_fingerprint:
+        raise ValueError("existing checkpoint sidecar does not match materialization fingerprint")
     checkpoint = Path(sidecar["checkpoint"])
     if not checkpoint.is_file():
         raise ValueError("existing checkpoint sidecar points to a missing checkpoint")
     recorded_hash = sidecar.get("checkpoint_sha256")
-    if recorded_hash and recorded_hash != _sha256(checkpoint):
+    if not recorded_hash:
+        raise ValueError("existing checkpoint sidecar is missing checkpoint hash")
+    if recorded_hash != _sha256(checkpoint):
         raise ValueError("existing checkpoint sidecar hash does not match checkpoint")
     return sidecar_path
 
@@ -306,16 +359,22 @@ def command_checkpoint_all(args: argparse.Namespace) -> int:
                 if target_position_counts.get(key, 0) > 1:
                     raise ValueError("TARGET_POSITION_COLLISION")
             if checkpoint.get("target_position"):
-                if checkpoint.get("alignment_evidence", {}).get("method") not in {"dynamic_semantic_occurrence", "exact_boundary_source_marker_occurrence"}:
-                    raise ValueError("prealigned target lacks dynamic semantic occurrence evidence")
                 source_position = checkpoint.get("source_position")
                 target_position = checkpoint["target_position"]
-                if not isinstance(source_position, dict) or target_position.get("build_id") != run_document.get("build_id"):
+                if not isinstance(source_position, dict) or not _bound_semantic_validation(checkpoint.get("semantic_validation"), source_position, target_position, run_document):
+                    record.update(status="candidate", reason="TARGET_DYNAMIC_EVIDENCE_REQUIRED", semantic_validation="candidate")
+                    items.append(record)
+                    _write(summary_path, _batch_result(items, plan_only=args.plan_only))
+                    continue
+                if checkpoint.get("alignment_evidence", {}).get("method") not in {"dynamic_semantic_occurrence", "exact_boundary_source_marker_occurrence"}:
+                    raise ValueError("prealigned target lacks dynamic semantic occurrence evidence")
+                if target_position.get("build_id") != run_document.get("build_id"):
                     raise ValueError("prealigned positions do not match the target run")
                 if "event_phase" in source_position or "event_phase" in target_position:
                     raise ValueError("event_phase belongs to the run manifest, not a position")
                 bound = {"schema_version": 1, "status": checkpoint.get("position_status", "exact"), "source_position": source_position, "event": None, "reason": None}
                 alignment_value = {"schema_version": 1, "status": "matched", "source": source_position, "correspondence": {"schema_version": 1, "source": source_position, "target": target_position, "position_status": bound["status"], "restore_status": "not_run", "cross_build_status": "not_run", "coverage_status": "not_run", "evidence": checkpoint["alignment_evidence"], "reason": None}, "global_path_margin": None, "top_paths": [], "manifest_hashes": checkpoint.get("manifest_hashes", {}), "diagnostics": {"method": "dynamic_semantic_occurrence"}}
+                record["semantic_validation"] = "validated"
             else:
                 request = checkpoint.get("request")
                 if not isinstance(request, dict) or source is None or target is None:
@@ -340,11 +399,18 @@ def command_checkpoint_all(args: argparse.Namespace) -> int:
                 continue
 
             target_position = alignment_value["correspondence"]["target"]
+            semantic_validation = checkpoint.get("semantic_validation")
+            if not _bound_semantic_validation(semantic_validation, bound["source_position"], target_position, run_document):
+                record.update(status="candidate", reason="TARGET_DYNAMIC_EVIDENCE_REQUIRED", semantic_validation="candidate")
+                items.append(record)
+                _write(summary_path, _batch_result(items, plan_only=args.plan_only))
+                continue
             target_path = write_target(item_dir / "target.json", target_position, run_manifest=run_document)
             record.update(status="aligned", target=str(target_path))
+            record["semantic_validation"] = "validated"
             if not args.plan_only:
                 materialization_dir = item_dir / "materialization"
-                resumed = _resume_sidecar(materialization_dir, target_position) if args.resume else None
+                resumed = _resume_sidecar(materialization_dir, target_position, run_document, command) if args.resume else None
                 if resumed:
                     record.update(status="reused", checkpoint_sidecar=str(resumed))
                 else:
@@ -372,8 +438,9 @@ def command_checkpoint_all(args: argparse.Namespace) -> int:
                 continue
             hit = value["hit"]
             sidecar = materialization_dir / "checkpoint-sidecar.json"
-            _write(sidecar, {"schema_version": 1, "build_id": target["build_id"], "run_id": run_document["run_id"], "anchor_id": target["anchor_id"], "occurrence": hit["occurrence"], "pc": hit["pc"], "workload_icount": hit["workload_icount"], "interval": hit["workload_icount"] // int(run_document["interval_instructions"]), "offset": hit["workload_icount"] % int(run_document["interval_instructions"]), "checkpoint": value["checkpoint"], "checkpoint_sha256": value["checkpoint_sha256"], "marker_consumed": False})
-            record.update(status="materialized", checkpoint_sidecar=str(sidecar), materialization=str(batch_dir / "materialization.json"))
+            _write(sidecar, {"schema_version": 1, "build_id": target["build_id"], "run_id": run_document["run_id"], "run_manifest_sha256": run_document.get("manifest_sha256"), "run_fingerprint": value["run_fingerprint"], "anchor_id": target["anchor_id"], "occurrence": hit["occurrence"], "pc": hit["pc"], "workload_icount": hit["workload_icount"], "interval": hit["workload_icount"] // int(run_document["interval_instructions"]), "offset": hit["workload_icount"] % int(run_document["interval_instructions"]), "checkpoint": value["checkpoint"], "checkpoint_sha256": value["checkpoint_sha256"], "marker_consumed": False})
+            materialization_root = Path(materialized.get("attempt_dir", batch_dir))
+            record.update(status="materialized", checkpoint_sidecar=str(sidecar), materialization=str(materialization_root / "materialization.json"))
 
     result = _batch_result(items, plan_only=args.plan_only)
     _write(summary_path, result)
@@ -428,7 +495,7 @@ def command_prepare_watchlists(args: argparse.Namespace) -> int:
 
 
 def command_calibrate_source_checkpoints(args: argparse.Namespace) -> int:
-    """Probe A checkpoint boundaries and bind the same semantic occurrences in B."""
+    """Probe A boundaries and emit B target candidates pending dynamic validation."""
 
     source_watch_document = _read(args.source_watchlist_manifest)
     target_watch_document = _read(args.target_watchlist_manifest)
@@ -460,7 +527,7 @@ def command_calibrate_source_checkpoints(args: argparse.Namespace) -> int:
         raise RuntimeError("exact source binding requires source-catalog.json and target-catalog.json")
     runner = NemuSourceProbeRunner(nemu=args.nemu, firmware=args.source_firmware, output_dir=output_root, interval_instructions=args.interval_instructions, max_instructions=max_instructions, context_size=args.context_size, timeout=args.timeout, force=args.force_probe, rng_seed=args.rng_seed)
     point_requests = tuple(CheckpointPoint(point, max(0, point * args.interval_instructions - args.warmup_instructions)) for point in points)
-    bindings = SourceBoundaryResolver(runner).resolve(point_requests, source_run, AnchorCatalog.load(source_catalog_path), AnchorCatalog.load(target_catalog_path), BoundaryPolicy(args.interval_instructions, args.max_snap_instructions or None))
+    bindings = SourceBoundaryResolver(runner).resolve(point_requests, source_run, AnchorCatalog.load(source_catalog_path), AnchorCatalog.load(target_catalog_path), BoundaryPolicy(args.interval_instructions, args.max_source_displacement, getattr(args, "multi_address_policy", "reject")))
     _write(output_root / "source-resolution.json", {"schema_version": 1, "status": "complete", "rng_seed": args.rng_seed, "items": [item.__dict__ for item in bindings.items], "counts": {"requested": len(bindings.items), "resolved": len(bindings.resolved), "rejected": len(bindings.items) - len(bindings.resolved)}, "boundary_artifact": bindings.boundary_artifact, "occurrence_artifact": bindings.occurrence_artifact})
 
     binding_by_id = {item.checkpoint_id: item for item in bindings.items}
@@ -474,15 +541,15 @@ def command_calibrate_source_checkpoints(args: argparse.Namespace) -> int:
         delta = int(binding.marker_delta_instructions)
         source_position = {"build_id": source_run["build_id"], "anchor_id": binding.source_marker["anchor_id"], "occurrence": binding.occurrence, "pc": binding.source_marker["pc"], "workload_icount": marker_icount, "interval": marker_icount // args.interval_instructions, "offset": marker_icount % args.interval_instructions, "requested_icount": binding.requested_icount, "actual_delta_instructions": delta}
         target_position = {"build_id": target_run["build_id"], "anchor_id": binding.target_marker["anchor_id"], "occurrence": binding.occurrence, "pc": binding.target_marker["pc"], "workload_icount": None, "interval": None, "offset": None, "requested_icount": None, "actual_delta_instructions": None}
-        evidence = {"method": "exact_boundary_source_marker_occurrence", "granularity": "source_line", "semantic_key": binding.semantic_key, "occurrence_scope": "global_from_scratch", "rng_seed": args.rng_seed, "boundary_pc": binding.boundary_pc, "marker_delta_instructions": delta, "boundary_observation_sha256": binding.boundary_observation_sha256, "occurrence_observation_sha256": binding.occurrence_observation_sha256, "boundary_artifact": bindings.boundary_artifact, "occurrence_artifact": bindings.occurrence_artifact}
-        requests.append({"id": f"point-{point}", "checkpoint_id": point, "source_checkpoint": str(checkpoint), "source_position": source_position, "target_position": target_position, "position_status": "exact" if delta == 0 else "snapped", "alignment_evidence": evidence, "manifest_hashes": {"source": source_run.get("manifest_sha256"), "target": target_run.get("manifest_sha256")}})
+        evidence = {"method": "exact_boundary_source_marker_occurrence", "granularity": "source_line", "semantic_key": binding.semantic_key, "occurrence_scope": "global_from_scratch", "rng_seed": args.rng_seed, "boundary_pc": binding.boundary_pc, "marker_delta_instructions": delta, "boundary_observation_sha256": binding.boundary_observation_sha256, "occurrence_observation_sha256": binding.occurrence_observation_sha256, "boundary_artifact": bindings.boundary_artifact, "occurrence_artifact": bindings.occurrence_artifact, "multi_address_disambiguation": binding.multi_address_disambiguation}
+        requests.append({"id": f"point-{point}", "checkpoint_id": point, "source_checkpoint": str(checkpoint), "source_position": source_position, "target_position": target_position, "position_status": "exact" if delta == 0 else "snapped", "alignment_evidence": evidence, "semantic_validation": {"status": "candidate", "reason": "TARGET_DYNAMIC_EVIDENCE_REQUIRED"}, "manifest_hashes": {"source": source_run.get("manifest_sha256"), "target": target_run.get("manifest_sha256")}})
     result = {"schema_version": 1, "status": "complete", "rng_seed": args.rng_seed, "checkpoints": requests, "counts": {"requested": len(checkpoints), "resolved": len(bindings.resolved), "rejected": len(bindings.items) - len(bindings.resolved), "failed": 0}, "source_run": source_run, "target_run": target_run, "probe_artifacts": {"boundary": bindings.boundary_artifact, "occurrence": bindings.occurrence_artifact}}
     _write(output_root / "source-calibration-result.json", result); _write(args.output, {"schema_version": 1, "target_run": target_run, "checkpoints": requests})
     return 0
 
 
 def command_checkpoint_suite(args: argparse.Namespace) -> int:
-    """Run the complete dynamic A-to-B checkpoint workflow for one suite workload."""
+    """Prepare a strict A-to-B checkpoint candidate plan for one suite workload."""
 
     workload_root = args.suite.resolve() / "workloads" / args.workload_id
     source_root = workload_root / args.source_label
@@ -518,7 +585,8 @@ def command_checkpoint_suite(args: argparse.Namespace) -> int:
         boot_allowance=args.boot_allowance,
         tail_instructions=args.tail_instructions,
         max_instructions=max_instructions,
-        max_snap_instructions=args.max_snap_instructions,
+        max_source_displacement=args.max_source_displacement,
+        multi_address_policy=getattr(args, "multi_address_policy", "reject"),
         force_probe=args.force_probe,
         rng_seed=args.rng_seed,
         context_size=32,
@@ -527,6 +595,11 @@ def command_checkpoint_suite(args: argparse.Namespace) -> int:
     if max_instructions is None:
         points = [_checkpoint_point(path) for path in args.source_checkpoints.glob("**/*memory*")]
         max_instructions = args.boot_allowance + max(0, max(points) * args.interval_instructions - args.warmup_instructions) + args.tail_instructions
+    target_max_instructions = getattr(args, "target_max_instructions", None)
+    if not args.plan_only and target_max_instructions is None:
+        raise ValueError("checkpoint-suite requires --target-max-instructions for B materialization")
+    if target_max_instructions is None:
+        target_max_instructions = max_instructions
     return command_checkpoint_all(argparse.Namespace(
         source_events=None,
         target_events=None,
@@ -538,7 +611,7 @@ def command_checkpoint_suite(args: argparse.Namespace) -> int:
         resume=args.resume,
         max_cells=2_000_000,
         max_seconds=30.0,
-        command=[] if args.plan_only else [str(args.nemu), str(target_firmware), "-b", "-I", str(max_instructions), "--rng-seed", args.rng_seed, "--checkpoint-format", "zstd"],
+        command=[] if args.plan_only else [str(args.nemu), str(target_firmware), "-b", "-I", str(target_max_instructions), "--rng-seed", args.rng_seed, "--checkpoint-format", "zstd"],
     ))
 
 
@@ -574,8 +647,8 @@ def parser() -> argparse.ArgumentParser:
     materialize = sub.add_parser("materialize-target"); materialize.add_argument("--alignment", type=Path, required=True); materialize.add_argument("--run-manifest", type=Path, required=True); materialize.add_argument("--target", type=Path, required=True); materialize.add_argument("--output-dir", type=Path, default=Path("materialization")); materialize.add_argument("command", nargs=argparse.REMAINDER); materialize.set_defaults(func=command_materialize)
     checkpoint_all = sub.add_parser("checkpoint-all", help="align and generate all requested target checkpoints"); checkpoint_all.add_argument("--source-events", type=Path); checkpoint_all.add_argument("--target-events", type=Path); checkpoint_all.add_argument("--run-manifest", type=Path); checkpoint_all.add_argument("--requests", type=Path, required=True); checkpoint_all.add_argument("--correspondence", type=Path); checkpoint_all.add_argument("--output-dir", type=Path, required=True); checkpoint_all.add_argument("--plan-only", action="store_true"); checkpoint_all.add_argument("--resume", action="store_true"); checkpoint_all.add_argument("--max-cells", type=int, default=2_000_000); checkpoint_all.add_argument("--max-seconds", type=float, default=30.0); checkpoint_all.add_argument("command", nargs=argparse.REMAINDER); checkpoint_all.set_defaults(func=command_checkpoint_all)
     watchlists = sub.add_parser("prepare-watchlists", help="build matching semantic anchor watchlists for two ELFs"); watchlists.add_argument("--source-elf", type=Path, required=True); watchlists.add_argument("--target-elf", type=Path, required=True); watchlists.add_argument("--output-dir", type=Path, required=True); watchlists.add_argument("--anchor-name", action="append", default=[]); watchlists.set_defaults(func=command_prepare_watchlists)
-    calibrate = sub.add_parser("calibrate-source-checkpoints", help="probe A checkpoint boundaries from one dynamic run"); calibrate.add_argument("--source-checkpoints", type=Path, required=True); calibrate.add_argument("--source-run-manifest", type=Path); calibrate.add_argument("--target-run-manifest", type=Path); calibrate.add_argument("--source-watchlist-manifest", type=Path, required=True); calibrate.add_argument("--target-watchlist-manifest", type=Path, required=True); calibrate.add_argument("--source-firmware", type=Path, required=True); calibrate.add_argument("--nemu", type=Path, required=True); calibrate.add_argument("--output-dir", type=Path, required=True); calibrate.add_argument("--output", type=Path, required=True); calibrate.add_argument("--workload-id", default="mcf"); calibrate.add_argument("--source-build-id", default="A"); calibrate.add_argument("--target-build-id", default="B"); calibrate.add_argument("--interval-instructions", type=int, default=20_000_000); calibrate.add_argument("--warmup-instructions", type=int, default=20_000_000); calibrate.add_argument("--boot-allowance", type=int, default=200_000_000); calibrate.add_argument("--tail-instructions", type=int, default=20_000_000); calibrate.add_argument("--max-instructions", type=int); calibrate.add_argument("--max-source-displacement", "--max-snap-instructions", dest="max_snap_instructions", type=int, default=0); calibrate.add_argument("--force-probe", action="store_true"); calibrate.add_argument("--rng-seed", default=hashlib.sha256(b"checkpoint-align").hexdigest()); calibrate.add_argument("--context-size", type=int, default=32); calibrate.add_argument("--timeout", type=int, default=86_400); calibrate.set_defaults(func=command_calibrate_source_checkpoints)
-    suite = sub.add_parser("checkpoint-suite", help="calibrate and materialize all A checkpoints with dynamic semantic occurrences"); suite.add_argument("--suite", type=Path, required=True); suite.add_argument("--workload-id", default="mcf"); suite.add_argument("--source-label", default="A"); suite.add_argument("--target-label", default="B"); suite.add_argument("--source-checkpoints", type=Path, required=True); suite.add_argument("--nemu", type=Path, required=True); suite.add_argument("--output-dir", type=Path, required=True); suite.add_argument("--anchor-name", action="append", default=[]); suite.add_argument("--interval-instructions", type=int, default=20_000_000); suite.add_argument("--warmup-instructions", type=int, default=20_000_000); suite.add_argument("--boot-allowance", type=int, default=200_000_000); suite.add_argument("--tail-instructions", type=int, default=20_000_000); suite.add_argument("--max-instructions", type=int); suite.add_argument("--max-source-displacement", "--max-snap-instructions", dest="max_snap_instructions", type=int, default=0); suite.add_argument("--force-probe", action="store_true"); suite.add_argument("--rng-seed", default=hashlib.sha256(b"checkpoint-align").hexdigest()); suite.add_argument("--timeout", type=int, default=86_400); suite.add_argument("--plan-only", action="store_true"); suite.add_argument("--resume", action="store_true"); suite.set_defaults(func=command_checkpoint_suite)
+    calibrate = sub.add_parser("calibrate-source-checkpoints", help="probe A checkpoint boundaries from one dynamic run"); calibrate.add_argument("--source-checkpoints", type=Path, required=True); calibrate.add_argument("--source-run-manifest", type=Path); calibrate.add_argument("--target-run-manifest", type=Path); calibrate.add_argument("--source-watchlist-manifest", type=Path, required=True); calibrate.add_argument("--target-watchlist-manifest", type=Path, required=True); calibrate.add_argument("--source-firmware", type=Path, required=True); calibrate.add_argument("--nemu", type=Path, required=True); calibrate.add_argument("--output-dir", type=Path, required=True); calibrate.add_argument("--output", type=Path, required=True); calibrate.add_argument("--workload-id", default="mcf"); calibrate.add_argument("--source-build-id", default="A"); calibrate.add_argument("--target-build-id", default="B"); calibrate.add_argument("--interval-instructions", type=int, default=20_000_000); calibrate.add_argument("--warmup-instructions", type=int, default=20_000_000); calibrate.add_argument("--boot-allowance", type=int, default=200_000_000); calibrate.add_argument("--tail-instructions", type=int, default=20_000_000); calibrate.add_argument("--max-instructions", type=int); calibrate.add_argument("--max-source-displacement", dest="max_source_displacement", type=int, default=None); calibrate.add_argument("--multi-address-policy", choices=("reject", "identical-elf"), default="reject"); calibrate.add_argument("--force-probe", action="store_true"); calibrate.add_argument("--rng-seed", default=hashlib.sha256(b"checkpoint-align").hexdigest()); calibrate.add_argument("--context-size", type=int, default=32); calibrate.add_argument("--timeout", type=int, default=86_400); calibrate.set_defaults(func=command_calibrate_source_checkpoints)
+    suite = sub.add_parser("checkpoint-suite", help="calibrate and materialize all A checkpoints with dynamic semantic occurrences"); suite.add_argument("--suite", type=Path, required=True); suite.add_argument("--workload-id", default="mcf"); suite.add_argument("--source-label", default="A"); suite.add_argument("--target-label", default="B"); suite.add_argument("--source-checkpoints", type=Path, required=True); suite.add_argument("--nemu", type=Path, required=True); suite.add_argument("--output-dir", type=Path, required=True); suite.add_argument("--anchor-name", action="append", default=[]); suite.add_argument("--interval-instructions", type=int, default=20_000_000); suite.add_argument("--warmup-instructions", type=int, default=20_000_000); suite.add_argument("--boot-allowance", type=int, default=200_000_000); suite.add_argument("--tail-instructions", type=int, default=20_000_000); suite.add_argument("--max-instructions", type=int); suite.add_argument("--target-max-instructions", type=int); suite.add_argument("--max-source-displacement", dest="max_source_displacement", type=int, default=None); suite.add_argument("--multi-address-policy", choices=("reject", "identical-elf"), default="reject"); suite.add_argument("--force-probe", action="store_true"); suite.add_argument("--rng-seed", default=hashlib.sha256(b"checkpoint-align").hexdigest()); suite.add_argument("--timeout", type=int, default=86_400); suite.add_argument("--plan-only", action="store_true"); suite.add_argument("--resume", action="store_true"); suite.set_defaults(func=command_checkpoint_suite)
     validate = sub.add_parser("validate"); validate.add_argument("--alignment", type=Path, required=True); validate.add_argument("--from-scratch-b", type=Path, required=True); validate.add_argument("--restore-b", type=Path, required=True); validate.add_argument("--source-progress", type=Path, required=True); validate.add_argument("--target-progress", type=Path, required=True); validate.add_argument("--full-coverage-b", type=Path, required=True); validate.add_argument("--sample-coverage-b", type=Path, required=True); validate.add_argument("--output-dir", type=Path, required=True); validate.add_argument("--output", type=Path, required=True); validate.set_defaults(func=command_validate)
     report = sub.add_parser("report"); report.add_argument("--inputs", type=Path, nargs="+", required=True); report.add_argument("--output", type=Path, required=True); report.set_defaults(func=command_report)
     return parser

@@ -23,6 +23,7 @@ static uint64_t event_count;
 static uint64_t max_events = UINT64_MAX;
 static uint64_t max_per_watch = UINT64_MAX;
 static uint64_t *watch_events;
+static bool *truncated_watches;
 static unsigned int vcpu_count;
 static bool write_error;
 static bool budget_exceeded;
@@ -129,10 +130,10 @@ fail:
     return false;
 }
 
-static void vcpu_init(qemu_plugin_id_t id, unsigned int vcpu_index)
+static void vcpu_init(unsigned int vcpu_index, void *userdata)
 {
-    (void)id;
     (void)vcpu_index;
+    (void)userdata;
     vcpu_count++;
 }
 
@@ -150,7 +151,12 @@ static void record_event(unsigned int vcpu_index, void *userdata)
         budget_exceeded = true;
         return;
     }
-    if (id >= watch_count || watch_events[id] >= max_per_watch) {
+    if (id >= watch_count) {
+        write_error = true;
+        return;
+    }
+    if (watch_events[id] >= max_per_watch) {
+        truncated_watches[id] = true;
         return;
     }
     if (vcpu_index != 0 || fwrite(bytes, sizeof(bytes), 1, trace_file) != 1) {
@@ -161,11 +167,11 @@ static void record_event(unsigned int vcpu_index, void *userdata)
     watch_events[id]++;
 }
 
-static void translate_tb(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
+static void translate_tb(struct qemu_plugin_tb *tb, void *userdata)
 {
     size_t count = qemu_plugin_tb_n_insns(tb);
 
-    (void)id;
+    (void)userdata;
     for (size_t i = 0; i < count; i++) {
         struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
         const WatchEntry *entry = find_watch(qemu_plugin_insn_vaddr(insn));
@@ -178,12 +184,11 @@ static void translate_tb(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
     }
 }
 
-static void plugin_exit(qemu_plugin_id_t id, void *userdata)
+static void plugin_exit(void *userdata)
 {
     FILE *status;
     bool close_error;
 
-    (void)id;
     (void)userdata;
     close_error = fflush(trace_file) != 0 || fclose(trace_file) != 0;
     status = fopen(status_path, "w");
@@ -193,13 +198,23 @@ static void plugin_exit(qemu_plugin_id_t id, void *userdata)
     fprintf(status,
             "{\"schema_version\":1,\"events\":%" PRIu64
             ",\"vcpus\":%u,\"budget_exceeded\":%s,"
-            "\"write_error\":%s,\"close_error\":%s}\n",
+            "\"write_error\":%s,\"close_error\":%s,"
+            "\"truncated_watch_ids\":[",
             event_count, vcpu_count, budget_exceeded ? "true" : "false",
             write_error ? "true" : "false",
             close_error ? "true" : "false");
+    bool first = true;
+    for (size_t i = 0; i < watch_count; i++) {
+        if (truncated_watches[i]) {
+            fprintf(status, "%s%zu", first ? "" : ",", i);
+            first = false;
+        }
+    }
+    fprintf(status, "]}\n");
     fclose(status);
     free(watchlist);
     free(watch_events);
+    free(truncated_watches);
 }
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
@@ -238,8 +253,11 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         return -1;
     }
     watch_events = calloc(watch_count, sizeof(*watch_events));
-    if (!watch_events) {
+    truncated_watches = calloc(watch_count, sizeof(*truncated_watches));
+    if (!watch_events || !truncated_watches) {
         fprintf(stderr, "occurrence-plugin: out of memory\n");
+        free(watch_events);
+        free(truncated_watches);
         return -1;
     }
     trace_file = fopen(trace_path, "wb");
@@ -248,8 +266,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
                 trace_path, strerror(errno));
         return -1;
     }
-    qemu_plugin_register_vcpu_init_cb(id, vcpu_init);
-    qemu_plugin_register_vcpu_tb_trans_cb(id, translate_tb);
+    qemu_plugin_register_vcpu_init_cb(id, vcpu_init, NULL);
+    qemu_plugin_register_vcpu_tb_trans_cb(id, translate_tb, NULL);
     qemu_plugin_register_atexit_cb(id, plugin_exit, NULL);
     return 0;
 }

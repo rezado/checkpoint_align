@@ -28,7 +28,19 @@ pure aligner and operate on explicit runtime artifacts.
 `probe-boundary-pcs` records exact before-instruction PCs without a large
 watchlist, then `probe-boundary-occurrences` watches only selected portable
 source markers. The resolver writes `source-resolution.json`; points without a
-unique source marker remain typed rejected and are not materialized.
+unique source marker remain typed rejected and are not materialized. Resolved
+B positions are candidates until an independently bound dynamic semantic
+validation artifact is supplied. Materialization requires that artifact and a
+separate `--target-max-instructions` budget for B.
+
+One source position can be emitted at several addresses, so one semantic key
+may hold more than one marker row. The boundary PC selects exactly one of them
+on the A side; pairing the target row is what becomes undecidable. That case
+stays `AMBIGUOUS_SOURCE_MARKER` by default. `--multi-address-policy
+identical-elf` instead pairs the target row with the same row-start PC, and is
+refused unless both catalogs describe identical ELF content (matching
+`artifact_sha256`). Every binding that used it records
+`multi_address_disambiguation: identical_elf_address` in its evidence.
 
 Both A passes and B materialization use the same deterministic `--rng-seed`.
 The seed is recorded in the resolution/calibration evidence, and cached probe

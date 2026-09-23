@@ -47,10 +47,15 @@ class CheckpointPoint:
 class BoundaryPolicy:
     interval_instructions: int
     max_source_displacement: int | None = None
+    multi_address_policy: str = "reject"
 
     @property
     def displacement_limit(self) -> int:
-        return self.max_source_displacement or self.interval_instructions
+        return self.interval_instructions if self.max_source_displacement is None else self.max_source_displacement
+
+    @property
+    def pair_multi_address_by_pc(self) -> bool:
+        return self.multi_address_policy == "identical-elf"
 
 
 @dataclass(frozen=True)
@@ -89,6 +94,7 @@ class SourceBinding:
     occurrence: int | None = None
     boundary_observation_sha256: str | None = None
     occurrence_observation_sha256: str | None = None
+    multi_address_disambiguation: str | None = None
 
 
 @dataclass(frozen=True)
@@ -221,11 +227,21 @@ class _MarkerIndex:
         candidates = [item for item in self.functions if item[0] <= pc < item[1]]
         if not candidates:
             return None, None
-        candidates.sort(key=lambda item: (item[1] - item[0], 0 if item[2].kind == "inline" else 1, item[2].anchor_id))
+        # Inline context is the most specific source identity; a DWARF function
+        # wins over its symtab alias, which is a low-confidence fallback.
+        priority = {"inline": 0, "function": 1}
+        candidates.sort(key=lambda item: (item[1] - item[0], priority.get(item[2].kind, 2), item[2].anchor_id))
         best = candidates[0][2]
-        best_context = (best.name or best.linkage_name or "", best.inline_chain)
-        equally_specific = [item[2] for item in candidates if item[1] - item[0] == candidates[0][1] - candidates[0][0]]
-        contexts = {(item.name or item.linkage_name or "", item.inline_chain) for item in equally_specific}
+        equally_specific = [item for item in candidates if item[1] - item[0] == candidates[0][1] - candidates[0][0]]
+        # Two anchors over the identical address range describe one code region:
+        # a DWARF function against its symtab alias, or a self-recursive inline
+        # instance against the function it expands.  Candidates are already
+        # ordered inline > function > symbol, so collapse each range to its
+        # highest-priority entry and only treat distinct ranges as ambiguity.
+        by_range: dict[tuple[int, int], Anchor] = {}
+        for start, end, anchor in equally_specific:
+            by_range.setdefault((start, end), anchor)
+        contexts = {(item.name or item.linkage_name or "", item.inline_chain) for item in by_range.values()}
         if len(contexts) != 1:
             return None, "UNSUPPORTED_INLINE_CONTEXT"
         return best, None
@@ -306,6 +322,8 @@ class SourceBoundaryResolver:
             raise ValueError("source run must use before_instruction semantics")
         if int(source_run.get("interval_instructions", policy.interval_instructions)) != policy.interval_instructions:
             raise ValueError("source run interval does not match boundary policy")
+        if policy.pair_multi_address_by_pc and source_catalog.artifact_sha256 != target_catalog.artifact_sha256:
+            raise ValueError("multi-address policy identical-elf requires identical source and target ELF content")
         points = self._points(checkpoint_points)
         boundary_run = self.runner.probe_boundaries(points)
         boundary_probes = self._probes(boundary_run, "probe-boundary-pcs")
@@ -327,6 +345,7 @@ class SourceBoundaryResolver:
 
         items: list[SourceBinding] = []
         occurrence_requests: list[OccurrenceProbeRequest] = []
+        pair_by_address = policy.pair_multi_address_by_pc
         for point in points:
             probe = boundary_probes.get(point.checkpoint_id)
             base = SourceBinding(point.checkpoint_id, "rejected", requested_icount=point.requested_icount, boundary_observation_sha256=boundary_run.sha256)
@@ -343,18 +362,33 @@ class SourceBoundaryResolver:
             if reason or source_marker is None or key is None:
                 items.append(replace(base, reason=reason or "NO_PORTABLE_MARKER"))
                 continue
+            # A single source line can be emitted at several addresses, so one
+            # semantic key may hold several marker rows.  The boundary PC still
+            # selects exactly one of them; the key only becomes undecidable when
+            # the two builds must be paired without shared code layout.
+            disambiguation: str | None = None
             if len(source_by_key.get(key, [])) != 1:
-                items.append(replace(base, reason="AMBIGUOUS_SOURCE_MARKER", semantic_key=key, source_marker=source_marker))
-                continue
+                if not pair_by_address:
+                    items.append(replace(base, reason="AMBIGUOUS_SOURCE_MARKER", semantic_key=key, source_marker=source_marker))
+                    continue
+                disambiguation = "identical_elf_address"
             targets = target_by_key.get(key, [])
             if not targets:
                 items.append(replace(base, reason="NO_PORTABLE_MARKER", semantic_key=key, source_marker=source_marker))
                 continue
-            if len(targets) != 1:
+            if len(targets) == 1:
+                target_marker = targets[0]
+            elif pair_by_address:
+                matched = [item for item in targets if int(item["pc"]) == int(source_marker["pc"])]
+                if len(matched) != 1:
+                    items.append(replace(base, reason="AMBIGUOUS_TARGET_MARKER", semantic_key=key, source_marker=source_marker))
+                    continue
+                target_marker = matched[0]
+                disambiguation = "identical_elf_address"
+            else:
                 items.append(replace(base, reason="AMBIGUOUS_TARGET_MARKER", semantic_key=key, source_marker=source_marker))
                 continue
-            target_marker = targets[0]
-            pending = replace(base, status="pending_occurrence", reason=None, semantic_key=key, source_marker=source_marker, target_marker=target_marker)
+            pending = replace(base, status="pending_occurrence", reason=None, semantic_key=key, source_marker=source_marker, target_marker=target_marker, multi_address_disambiguation=disambiguation)
             items.append(pending)
             occurrence_requests.append(OccurrenceProbeRequest(point.checkpoint_id, point.requested_icount, key, int(source_marker["pc"])))
 

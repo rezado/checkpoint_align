@@ -55,7 +55,7 @@ class PositionAligner:
             return _rejected(source, "NO_ANCHOR", source_run, target_run)
         canonical_source = tuple((event.semantic_key, event.occurrence) for event in source_events)
         canonical_target = tuple((event.semantic_key, event.occurrence) for event in target_events)
-        if canonical_source == canonical_target:
+        if canonical_source == canonical_target and all(_event_context_compatible(source_event, target_event) for source_event, target_event in zip(source_events, target_events)):
             target = _position_from_event(target_events[source_index], target_run, source.requested_icount)
             status = "snapped" if source.actual_delta_instructions not in {None, 0} else "exact"
             matched = Correspondence(source, target, status, evidence={"method": "canonical_occurrence_identity", "source_event_index": source_index, "target_event_index": source_index, "occurrence_transform": target.occurrence - source.occurrence})
@@ -69,7 +69,6 @@ class PositionAligner:
                 target_events,
                 correspondence,
                 gap_penalty=float(policy.get("gap_penalty", -1.0)),
-                warp_penalty=float(policy.get("warp_penalty", 0.05)),
                 deadline=time.monotonic() + float(policy.get("max_seconds", 30.0)),
             )
         except _SearchTruncated:
@@ -79,10 +78,12 @@ class PositionAligner:
         best = paths[0]
         second = paths[1] if len(paths) > 1 else None
         margin = best.score - second.score if second else None
-        top_paths = tuple({"score": path.score, "matches": sum(i is not None and j is not None for i, j in path.ops)} for path in paths)
-        if second and margin is not None and margin <= float(policy.get("tie_epsilon", 1e-12)):
+        top_paths = tuple({"score": path.score, "matches": sum(i is not None and j is not None for i, j in path.ops), "target_index": next((j for i, j in path.ops if i == source_index and j is not None), None)} for path in paths)
+        best_target_index = next((j for i, j in best.ops if i == source_index and j is not None), None)
+        second_target_index = next((j for i, j in second.ops if i == source_index and j is not None), None) if second else best_target_index
+        if second and margin is not None and margin <= float(policy.get("tie_epsilon", 1e-12)) and second_target_index != best_target_index:
             return _rejected(source, "AMBIGUOUS", source_run, target_run, margin=margin, top_paths=top_paths, position_status="ambiguous")
-        target_index = next((j for i, j in best.ops if i == source_index and j is not None), None)
+        target_index = best_target_index
         if target_index is None:
             return _rejected(source, "NO_CORRESPONDENCE", source_run, target_run, margin=margin, top_paths=top_paths)
         target = _position_from_event(target_events[target_index], target_run, source.requested_icount)
@@ -145,14 +146,7 @@ def _keep_top(paths):
     return tuple(sorted(unique.values(), key=key)[:2])
 
 
-def _last_transform(path: _Path, source, target) -> int | None:
-    for source_index, target_index in reversed(path.ops):
-        if source_index is not None and target_index is not None:
-            return target[target_index].occurrence - source[source_index].occurrence
-    return None
-
-
-def _global_paths(source, target, correspondence, *, gap_penalty, warp_penalty, deadline):
+def _global_paths(source, target, correspondence, *, gap_penalty, deadline):
     table = [[() for _ in range(len(target) + 1)] for _ in range(len(source) + 1)]
     table[0][0] = (_Path(0.0, ()),)
     for i in range(len(source) + 1):
@@ -171,16 +165,20 @@ def _global_paths(source, target, correspondence, *, gap_penalty, warp_penalty, 
                     _, score, _ = evidence
                     candidates = list(table[i + 1][j + 1])
                     for path in table[i][j]:
-                        previous = _last_transform(path, source, target)
-                        transform = target[j].occurrence - source[i].occurrence
-                        warp = abs(transform - previous) * warp_penalty if previous is not None else 0.0
-                        candidates.append(_Path(path.score + score - warp, path.ops + ((i, j),)))
+                        candidates.append(_Path(path.score + score, path.ops + ((i, j),)))
                     table[i + 1][j + 1] = _keep_top(candidates)
     return table[-1][-1]
 
 
 def _manifests(source: BuildRun, target: BuildRun) -> dict[str, str]:
     return {"source": source.manifest_sha256, "target": target.manifest_sha256}
+
+
+def _event_context_compatible(source: ProgressEvent, target: ProgressEvent) -> bool:
+    source_context, target_context = source.context, target.context
+    if not isinstance(source_context, Mapping) or not isinstance(target_context, Mapping):
+        return True
+    return all(key not in target_context or target_context[key] == value for key, value in source_context.items())
 
 
 def _rejected(source, reason, source_run, target_run, *, margin=None, top_paths=(), position_status="no_correspondence", diagnostics=None):

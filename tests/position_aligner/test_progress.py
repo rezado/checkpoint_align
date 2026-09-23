@@ -133,6 +133,14 @@ class DynamicAlignmentTest(unittest.TestCase):
         result = PositionAligner().align({"run": run("A"), "events": source}, trace("B", [event("B", "loop", 0, 100)]), {}, position(source[0]), {})
         self.assertEqual(result.correspondence.reason, "EVIDENCE_COLLECTION_FAILED")
 
+    def test_canonical_identity_rejects_conflicting_context(self) -> None:
+        source = [event("A", "loop", 0, 100)]
+        target = [event("B", "loop", 0, 100)]
+        source[0] = ProgressEvent("A", "fixture-A-run1", "A:loop", "loop", 0, 0x1000, 100, {"work_unit": 1})
+        target[0] = ProgressEvent("B", "fixture-B-run1", "B:loop", "loop", 0, 0x1000, 100, {"work_unit": 2})
+        result = PositionAligner().align(trace("A", source), trace("B", target), {}, position(source[0]), {})
+        self.assertEqual(result.correspondence.reason, "NO_CORRESPONDENCE")
+
 
 class MaterializeTest(unittest.TestCase):
     def test_target_requires_semantic_identity(self) -> None:
@@ -142,19 +150,28 @@ class MaterializeTest(unittest.TestCase):
 
 
 class ValidationTest(unittest.TestCase):
+    def test_missing_evidence_is_not_validated(self) -> None:
+        self.assertEqual(validate_cross_build({}, {}, "exact")["status"], "insufficient_evidence")
+        self.assertEqual(validate_coverage({}, {})["status"], "insufficient_evidence")
+        self.assertEqual(validate_restore({}, {})["reason"], "INSUFFICIENT_EVIDENCE")
+
+    def test_empty_full_coverage_is_not_one(self) -> None:
+        result = validate_coverage({"build_id": "B", "run_id": "run", "phases": [], "features": []}, {"build_id": "B", "run_id": "run", "phases": [], "features": []})
+        self.assertEqual(result["status"], "insufficient_evidence")
+
     def test_three_validation_dimensions_are_independent(self) -> None:
         event_value = {"anchor_id": "B:loop", "occurrence": 4}
-        scratch = {"build_id": "B", "target_event": event_value, "state_digest": "same", "subsequent_events": ["done"], "terminal_observed": True}
+        scratch = {"build_id": "B", "run_id": "run", "target_event": event_value, "position": {"anchor_id": "B:loop", "occurrence": 4}, "state_digest": "same", "subsequent_events": ["done"], "terminal_observed": True, "checkpoint_sha256": "c" * 64}
         restored = {**scratch, "marker_consumed": False}
         self.assertEqual(validate_restore(scratch, restored)["status"], "validated")
-        source_progress = {"context": {"work_unit": 4, "subphase": "update"}, "before_marker": "begin", "after_marker": "end", "application_state": "state"}
+        source_progress = {"alignment_id": "alignment-1", "build_id": "A", "run_id": "run-a", "position": {"anchor_id": "A:loop", "occurrence": 4}, "context": {"work_unit": 4, "subphase": "update"}, "before_marker": "begin", "after_marker": "end", "application_state": "state"}
         self.assertEqual(validate_cross_build(source_progress, dict(source_progress), "exact")["status"], "validated")
-        coverage = validate_coverage({"build_id": "B", "phases": ["init", "run"], "features": [1, 2]}, {"build_id": "B", "phases": ["init", "run"], "features": [2]})
+        coverage = validate_coverage({"build_id": "B", "run_id": "run", "phases": ["init", "run"], "features": [1, 2]}, {"build_id": "B", "run_id": "run", "phases": ["init", "run"], "features": [2]})
         self.assertEqual(coverage["status"], "validated")
         self.assertEqual(coverage["claim_scope"], "B-internal functional behavior coverage only")
 
     def test_cross_build_divergence_has_typed_reason(self) -> None:
-        source = {"context": {"work_unit": 1, "subphase": "a"}, "before_marker": "x", "after_marker": "y", "application_state": "s"}
+        source = {"alignment_id": "alignment-1", "build_id": "A", "run_id": "run-a", "position": {"anchor_id": "A:loop", "occurrence": 1}, "context": {"work_unit": 1, "subphase": "a"}, "before_marker": "x", "after_marker": "y", "application_state": "s"}
         target = {**source, "application_state": "different"}
         result = validate_cross_build(source, target, "exact")
         self.assertEqual(result["status"], "failed")

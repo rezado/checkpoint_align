@@ -8,6 +8,11 @@ __pycache__/
 local-build/
 local-src/
 
+# Local benchmark logs and editor settings
+/mcf_A/
+/mcf_B/
+/.vscode/
+
 # Python environments and package build output
 .venv/
 build/

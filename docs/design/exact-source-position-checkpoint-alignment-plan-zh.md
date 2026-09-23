@@ -53,7 +53,7 @@ A checkpoint point
 
 > 目标边界时真正执行的 PC 属于哪个语义位置？
 
-mcf point-1822 的目标位置为 36.420B，却被绑定到 4.517B 的 `__printf_buffer_done occurrence=3`，就是这个路径造成的。默认 `--max-snap-instructions=0` 又取消了距离上限，使这种结果仍被标为成功。
+mcf point-1822 的目标位置为 36.420B，却被绑定到 4.517B 的 `__printf_buffer_done occurrence=3`，就是这个路径造成的。严格模式下 `--max-source-displacement=0` 会拒绝任何位移，避免这种结果被标为成功。
 
 ## 4. 总体设计
 

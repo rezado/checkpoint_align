@@ -13,7 +13,7 @@ from typing import Any, Mapping, Sequence
 SCHEMA_VERSION = 1
 EVENT_PHASES = {"before_instruction"}
 POSITION_STATUSES = {"exact", "snapped", "ambiguous", "no_correspondence"}
-VALIDATION_STATUSES = {"candidate", "validated", "failed", "not_run"}
+VALIDATION_STATUSES = {"candidate", "validated", "failed", "insufficient_evidence", "not_run"}
 
 
 def _sha(value: Any, name: str) -> str:
