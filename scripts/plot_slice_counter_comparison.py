@@ -59,15 +59,15 @@ def specs() -> tuple[CounterSpec, ...]:
         CounterSpec("load_instr", "load instructions", "events_per_minst", path_ends(rob, "load_instr_cnt")),
         CounterSpec("store_instr", "store instructions", "events_per_minst", path_ends(rob, "store_instr_cnt")),
         CounterSpec("branch_mispredict", "branch mispredict", "events_per_minst", path_ends(rob, "br_mis_pred")),
-        CounterSpec("dtlb_l2tlb_req", "DTLB→L2TLB request", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw.ptw", "req_count1")),
-        CounterSpec("ptw_mem_req", "page-walk memory request", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw.ptw", "mem_count")),
-        CounterSpec("ptw_mem_cycles", "page-walk memory cycles", "cycles_per_kinst", path_ends(".memBlock.inner.ptw.ptw.ptw", "mem_cycle")),
+        CounterSpec("dtlb_l2tlb_req", "DTLB→L2TLB request", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw", "req_count1")),
+        CounterSpec("ptw_mem_req", "page-walk memory request", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw", "mem_count")),
+        CounterSpec("ptw_mem_cycles", "page-walk memory cycles", "cycles_per_kinst", path_ends(".memBlock.inner.ptw.ptw", "mem_cycle")),
         CounterSpec("load_tlb_miss", "load TLB miss", "events_per_minst", path_contains(".memBlock.inner.LoadUnit_", "tlb_miss_first_issue"), True),
         CounterSpec("store_tlb_miss", "store TLB miss", "events_per_minst", path_contains(".memBlock.inner.StoreUnit_", "s1_tlbMiss"), True),
         CounterSpec("load_ptw_req", "load PTW request", "events_per_minst", path_ends(".dtlbRepeater.load_filter_load_entry", "ptw_req_count")),
         CounterSpec("store_ptw_req", "store PTW request", "events_per_minst", path_ends(".dtlbRepeater.store_filter_store_entry", "ptw_req_count")),
-        CounterSpec("superpage_hit", "superpage hit", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw.ptw.cache", "sp_hit")),
-        CounterSpec("superpage_refill", "superpage refill", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw.ptw.cache", "spRefill")),
+        CounterSpec("superpage_hit", "superpage hit", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw.cache", "sp_hit")),
+        CounterSpec("superpage_refill", "superpage refill", "events_per_minst", path_ends(".memBlock.inner.ptw.ptw.cache", "spRefill")),
         CounterSpec("l1d_miss", "L1D miss first issue", "events_per_minst", path_contains(".memBlock.inner.LoadUnit_", "dcache_miss_first_issue"), True),
         CounterSpec("l1d_miss_allocate", "L1D miss allocate", "events_per_minst", path_ends(".memBlock.inner.dcache.dcache.missQueue", "miss_req_load_allocate")),
         CounterSpec("l1d_miss_merge", "L1D miss merge", "events_per_minst", path_ends(".memBlock.inner.dcache.dcache.missQueue", "miss_req_merge_load")),
@@ -162,13 +162,17 @@ def write_tables(out: Path, rows: list[dict[str, object]]) -> None:
     out.mkdir(parents=True, exist_ok=True)
     summary_fields = ["slice", "weight", "a_ipc", "b_ipc", "ipc_delta", "ipc_delta_pct", "a_cycles", "b_cycles", "cycles_delta_pct"]
     with (out / "slice_summary.tsv").open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=summary_fields, delimiter="\t")
+        writer = csv.DictWriter(
+            stream, fieldnames=summary_fields, delimiter="\t", lineterminator="\n"
+        )
         writer.writeheader()
         for row in rows:
             writer.writerow({key: row[key] for key in summary_fields})
     detail_fields = ["slice", "weight", "counter", "label", "unit", "a_value", "b_value", "delta", "delta_pct"]
     with (out / "slice_counter_comparison.tsv").open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=detail_fields, delimiter="\t")
+        writer = csv.DictWriter(
+            stream, fieldnames=detail_fields, delimiter="\t", lineterminator="\n"
+        )
         writer.writeheader()
         for row in rows:
             for spec in specs():
