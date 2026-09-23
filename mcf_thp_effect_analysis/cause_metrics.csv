@@ -1,0 +1,23 @@
+category,label,metric,slices,A_thp_off_sum,B_thp_on_sum,delta_pct
+address-translation pressure,TLB misses,tlb_miss,13,62237913.0,29652376.0,-52.35641015147793
+address-translation pressure,TLB requests,tlb_req_count,13,63276845.0,29796524.0,-52.91085704415256
+page-table-walk traffic,Page-table-walk requests,ptw_req_count,13,35279803.0,8426630.0,-76.11486095883245
+page-table-walk traffic,Page-table-walk responses,ptw_resp_count,13,140590731.0,33666589.0,-76.0534789452087
+superpage-cache activity,Superpage cache hits,sp_hit,13,8761.0,3260770.0,37119.15306471864
+superpage-cache activity,Superpage cache refills,spRefill,13,133.0,3379024.0,2540519.5488721807
+page-table-walk traffic,PTW-originated L2 misses,E2_L2AReqSource_PTW_Miss,13,743850.0,49201.0,-93.38562882301538
+data-cache pressure,L1 demand misses,l1DemandMiss,13,19194864.0,25891253.0,34.886358142469774
+data-cache pressure,L2 demand misses,l2demandMiss,13,4547193.0,3980256.0,-12.467845547791793
+data-cache pressure,D-cache misses,dcache_miss,13,129046758.0,127678245.0,-1.0604784042695594
+memory-system activity,Memory cycles,mem_cycle,13,198204001.0,111680783.0,-43.65361827383091
+load latency,Load L2 stalls,LoadL2Stall,13,86333052.0,120651089.0,39.75075154298958
+load latency,Load L3 stalls,LoadL3Stall,13,63543565.0,45394186.0,-28.562103810196987
+load latency,Load memory stalls,LoadMemStall,13,439566212.0,315507731.0,-28.22293379546652
+backend readiness,Memory-not-ready stalls,MemNotReadyStall,13,55023925.0,263960139.0,379.7188477557717
+backend readiness,Backend stall cycles,backend_stall_cycle,13,174942455.0,182005850.0,4.037553377194804
+backend readiness,Execute stall cycles,exec_stall_cycle,13,134156065.0,142639549.0,6.323593346301563
+front-end readiness,Fetch IFU-not-ready stalls,stallCycles_fetch_ifuNotReady,13,160350205.0,175524279.0,9.46308362998351
+front-end readiness,Instruction-buffer-full stalls,stallCycles_ibufferFull,13,163914343.0,178801618.0,9.08235040785906
+front-end/backend queues,IQ stall cycles,stall_cycle_iq,13,124529957.0,134201600.0,7.766519183813739
+front-end/backend queues,Decode-full stalls,stallCycles_decodeFull,13,172119143.0,179414204.0,4.23837864449511
+control flow,Branch mispredicts,branchMispredicts,13,1097430.0,1085346.0,-1.1011180667559664

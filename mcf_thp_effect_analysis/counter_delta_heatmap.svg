@@ -1,0 +1,573 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1073" height="707" viewBox="0 0 1073 707">
+<rect width="100%" height="100%" fill="white"/>
+<text x="18" y="28" font-family="Arial,sans-serif" font-size="19px" text-anchor="start" font-weight="bold" fill="#243447">THP 开启后性能计数器变化热力图（B - A）</text>
+<text x="18" y="51" font-family="Arial,sans-serif" font-size="12px" text-anchor="start" font-weight="normal" fill="#52606d">按切片聚合重复实例；色阶截断为 ±100%，单元格数值为百分比。</text>
+<text x="275.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 275.5 82)">1773</text>
+<text x="336.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 336.5 82)">2709</text>
+<text x="397.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 397.5 82)">4019</text>
+<text x="458.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 458.5 82)">5049</text>
+<text x="519.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 519.5 82)">5466</text>
+<text x="580.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 580.5 82)">7363</text>
+<text x="641.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 641.5 82)">8719</text>
+<text x="702.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 702.5 82)">8725</text>
+<text x="763.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 763.5 82)">8837</text>
+<text x="824.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 824.5 82)">9417</text>
+<text x="885.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 885.5 82)">10311</text>
+<text x="946.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 946.5 82)">11026</text>
+<text x="1007.5" y="82" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-55 1007.5 82)">13715</text>
+<text x="237" y="110" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">TLB misses</text>
+<rect x="245" y="92" width="60" height="26" fill="#5e8cdc" stroke="white"/>
+<text x="275.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-76%</text>
+<rect x="306" y="92" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="336.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-134%</text>
+<rect x="367" y="92" width="60" height="26" fill="#3770dc" stroke="white"/>
+<text x="397.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-95%</text>
+<rect x="428" y="92" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="458.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="489" y="92" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-113%</text>
+<rect x="550" y="92" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-127%</text>
+<rect x="611" y="92" width="60" height="26" fill="#5182dc" stroke="white"/>
+<text x="641.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-83%</text>
+<rect x="672" y="92" width="60" height="26" fill="#3770dc" stroke="white"/>
+<text x="702.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-95%</text>
+<rect x="733" y="92" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="794" y="92" width="60" height="26" fill="#4076dc" stroke="white"/>
+<text x="824.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-91%</text>
+<rect x="855" y="92" width="60" height="26" fill="#f4f7dc" stroke="white"/>
+<text x="885.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-5%</text>
+<rect x="916" y="92" width="60" height="26" fill="#306bdc" stroke="white"/>
+<text x="946.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-98%</text>
+<rect x="977" y="92" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="1007.5" y="109" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-101%</text>
+<text x="237" y="137" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">TLB requests</text>
+<rect x="245" y="119" width="60" height="26" fill="#6993dc" stroke="white"/>
+<text x="275.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-71%</text>
+<rect x="306" y="119" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="336.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-189%</text>
+<rect x="367" y="119" width="60" height="26" fill="#3a72dc" stroke="white"/>
+<text x="397.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-94%</text>
+<rect x="428" y="119" width="60" height="26" fill="#346edc" stroke="white"/>
+<text x="458.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-96%</text>
+<rect x="489" y="119" width="60" height="26" fill="#5082dc" stroke="white"/>
+<text x="519.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-83%</text>
+<rect x="550" y="119" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-128%</text>
+<rect x="611" y="119" width="60" height="26" fill="#5082dc" stroke="white"/>
+<text x="641.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-83%</text>
+<rect x="672" y="119" width="60" height="26" fill="#3a72dc" stroke="white"/>
+<text x="702.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-94%</text>
+<rect x="733" y="119" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-104%</text>
+<rect x="794" y="119" width="60" height="26" fill="#346edc" stroke="white"/>
+<text x="824.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-96%</text>
+<rect x="855" y="119" width="60" height="26" fill="#f6f9dc" stroke="white"/>
+<text x="885.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-4%</text>
+<rect x="916" y="119" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="946.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="977" y="119" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="1007.5" y="136" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-112%</text>
+<text x="237" y="164" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Page-table-walk requests</text>
+<rect x="245" y="146" width="60" height="26" fill="#467bdc" stroke="white"/>
+<text x="275.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-88%</text>
+<rect x="306" y="146" width="60" height="26" fill="#789fdc" stroke="white"/>
+<text x="336.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-64%</text>
+<rect x="367" y="146" width="60" height="26" fill="#3b73dc" stroke="white"/>
+<text x="397.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-93%</text>
+<rect x="428" y="146" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="458.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="489" y="146" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-123%</text>
+<rect x="550" y="146" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-113%</text>
+<rect x="611" y="146" width="60" height="26" fill="#5b8adc" stroke="white"/>
+<text x="641.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-78%</text>
+<rect x="672" y="146" width="60" height="26" fill="#3670dc" stroke="white"/>
+<text x="702.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-95%</text>
+<rect x="733" y="146" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="794" y="146" width="60" height="26" fill="#4479dc" stroke="white"/>
+<text x="824.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-89%</text>
+<rect x="855" y="146" width="60" height="26" fill="#97b5dc" stroke="white"/>
+<text x="885.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-49%</text>
+<rect x="916" y="146" width="60" height="26" fill="#306bdc" stroke="white"/>
+<text x="946.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-98%</text>
+<rect x="977" y="146" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="1007.5" y="163" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-101%</text>
+<text x="237" y="191" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Page-table-walk responses</text>
+<rect x="245" y="173" width="60" height="26" fill="#467bdc" stroke="white"/>
+<text x="275.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-88%</text>
+<rect x="306" y="173" width="60" height="26" fill="#799fdc" stroke="white"/>
+<text x="336.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-64%</text>
+<rect x="367" y="173" width="60" height="26" fill="#3b73dc" stroke="white"/>
+<text x="397.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-93%</text>
+<rect x="428" y="173" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="458.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="489" y="173" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-124%</text>
+<rect x="550" y="173" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-113%</text>
+<rect x="611" y="173" width="60" height="26" fill="#5b8adc" stroke="white"/>
+<text x="641.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-78%</text>
+<rect x="672" y="173" width="60" height="26" fill="#3670dc" stroke="white"/>
+<text x="702.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-95%</text>
+<rect x="733" y="173" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="794" y="173" width="60" height="26" fill="#4479dc" stroke="white"/>
+<text x="824.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-89%</text>
+<rect x="855" y="173" width="60" height="26" fill="#97b5dc" stroke="white"/>
+<text x="885.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-49%</text>
+<rect x="916" y="173" width="60" height="26" fill="#306bdc" stroke="white"/>
+<text x="946.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-98%</text>
+<rect x="977" y="173" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="1007.5" y="190" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-101%</text>
+<text x="237" y="218" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">PTW-originated L2 misses</text>
+<rect x="245" y="200" width="60" height="26" fill="#d4e0dc" stroke="white"/>
+<text x="275.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-20%</text>
+<rect x="306" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="336.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-111%</text>
+<rect x="367" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-101%</text>
+<rect x="428" y="200" width="60" height="26" fill="#326cdc" stroke="white"/>
+<text x="458.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-97%</text>
+<rect x="489" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-118%</text>
+<rect x="550" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="611" y="200" width="60" height="26" fill="#326cdc" stroke="white"/>
+<text x="641.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-98%</text>
+<rect x="672" y="200" width="60" height="26" fill="#5787dc" stroke="white"/>
+<text x="702.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-80%</text>
+<rect x="733" y="200" width="60" height="26" fill="#306bdc" stroke="white"/>
+<text x="763.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-98%</text>
+<rect x="794" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="824.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-101%</text>
+<rect x="855" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="885.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-109%</text>
+<rect x="916" y="200" width="60" height="26" fill="#2f6adc" stroke="white"/>
+<text x="946.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-99%</text>
+<rect x="977" y="200" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="1007.5" y="217" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-105%</text>
+<text x="237" y="245" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">L1 demand misses</text>
+<rect x="245" y="227" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="275.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-297%</text>
+<rect x="306" y="227" width="60" height="26" fill="#3a72dc" stroke="white"/>
+<text x="336.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-94%</text>
+<rect x="367" y="227" width="60" height="26" fill="#4b7fdc" stroke="white"/>
+<text x="397.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-85%</text>
+<rect x="428" y="227" width="60" height="26" fill="#769ddc" stroke="white"/>
+<text x="458.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-65%</text>
+<rect x="489" y="227" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-243%</text>
+<rect x="550" y="227" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-105%</text>
+<rect x="611" y="227" width="60" height="26" fill="#fafbdc" stroke="white"/>
+<text x="641.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2%</text>
+<rect x="672" y="227" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="702.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-5480%</text>
+<rect x="733" y="227" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-290%</text>
+<rect x="794" y="227" width="60" height="26" fill="#acc4dc" stroke="white"/>
+<text x="824.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-39%</text>
+<rect x="855" y="227" width="60" height="26" fill="#f6f8dc" stroke="white"/>
+<text x="885.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-4%</text>
+<rect x="916" y="227" width="60" height="26" fill="#dcf8d4" stroke="white"/>
+<text x="946.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+4%</text>
+<rect x="977" y="227" width="60" height="26" fill="#dcae7d" stroke="white"/>
+<text x="1007.5" y="244" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+54%</text>
+<text x="237" y="272" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">L2 demand misses</text>
+<rect x="245" y="254" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+520%</text>
+<rect x="306" y="254" width="60" height="26" fill="#96b4dc" stroke="white"/>
+<text x="336.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-50%</text>
+<rect x="367" y="254" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-108%</text>
+<rect x="428" y="254" width="60" height="26" fill="#99b6dc" stroke="white"/>
+<text x="458.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-48%</text>
+<rect x="489" y="254" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-148%</text>
+<rect x="550" y="254" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-148%</text>
+<rect x="611" y="254" width="60" height="26" fill="#dcfedb" stroke="white"/>
+<text x="641.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+0%</text>
+<rect x="672" y="254" width="60" height="26" fill="#ecf1dc" stroke="white"/>
+<text x="702.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-9%</text>
+<rect x="733" y="254" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-113%</text>
+<rect x="794" y="254" width="60" height="26" fill="#4177dc" stroke="white"/>
+<text x="824.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-90%</text>
+<rect x="855" y="254" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="885.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-260%</text>
+<rect x="916" y="254" width="60" height="26" fill="#dcecc6" stroke="white"/>
+<text x="946.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+12%</text>
+<rect x="977" y="254" width="60" height="26" fill="#dca877" stroke="white"/>
+<text x="1007.5" y="271" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+57%</text>
+<text x="237" y="299" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">D-cache misses</text>
+<rect x="245" y="281" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+2040%</text>
+<rect x="306" y="281" width="60" height="26" fill="#e1eadc" stroke="white"/>
+<text x="336.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-14%</text>
+<rect x="367" y="281" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-107%</text>
+<rect x="428" y="281" width="60" height="26" fill="#89abdc" stroke="white"/>
+<text x="458.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-56%</text>
+<rect x="489" y="281" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-221%</text>
+<rect x="550" y="281" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-141%</text>
+<rect x="611" y="281" width="60" height="26" fill="#d5e1dc" stroke="white"/>
+<text x="641.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-20%</text>
+<rect x="672" y="281" width="60" height="26" fill="#fcfddc" stroke="white"/>
+<text x="702.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1%</text>
+<rect x="733" y="281" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-196%</text>
+<rect x="794" y="281" width="60" height="26" fill="#97b5dc" stroke="white"/>
+<text x="824.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-49%</text>
+<rect x="855" y="281" width="60" height="26" fill="#dce8c1" stroke="white"/>
+<text x="885.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+15%</text>
+<rect x="916" y="281" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="946.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+128%</text>
+<rect x="977" y="281" width="60" height="26" fill="#dca06e" stroke="white"/>
+<text x="1007.5" y="298" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+63%</text>
+<text x="237" y="326" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Memory cycles</text>
+<rect x="245" y="308" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+129%</text>
+<rect x="306" y="308" width="60" height="26" fill="#dc9a66" stroke="white"/>
+<text x="336.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+67%</text>
+<rect x="367" y="308" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-107%</text>
+<rect x="428" y="308" width="60" height="26" fill="#316cdc" stroke="white"/>
+<text x="458.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-98%</text>
+<rect x="489" y="308" width="60" height="26" fill="#3670dc" stroke="white"/>
+<text x="519.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-95%</text>
+<rect x="550" y="308" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-171%</text>
+<rect x="611" y="308" width="60" height="26" fill="#6793dc" stroke="white"/>
+<text x="641.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-72%</text>
+<rect x="672" y="308" width="60" height="26" fill="#3d74dc" stroke="white"/>
+<text x="702.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-92%</text>
+<rect x="733" y="308" width="60" height="26" fill="#3871dc" stroke="white"/>
+<text x="763.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-94%</text>
+<rect x="794" y="308" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="824.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-110%</text>
+<rect x="855" y="308" width="60" height="26" fill="#dc8750" stroke="white"/>
+<text x="885.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+80%</text>
+<rect x="916" y="308" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="946.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="977" y="308" width="60" height="26" fill="#dcca9e" stroke="white"/>
+<text x="1007.5" y="325" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+35%</text>
+<text x="237" y="353" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Load L2 stalls</text>
+<rect x="245" y="335" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+615%</text>
+<rect x="306" y="335" width="60" height="26" fill="#c8d8dc" stroke="white"/>
+<text x="336.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-26%</text>
+<rect x="367" y="335" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="397.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+3952%</text>
+<rect x="428" y="335" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="458.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+212%</text>
+<rect x="489" y="335" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="519.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+180%</text>
+<rect x="550" y="335" width="60" height="26" fill="#8daddc" stroke="white"/>
+<text x="580.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-54%</text>
+<rect x="611" y="335" width="60" height="26" fill="#dcf9d6" stroke="white"/>
+<text x="641.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+3%</text>
+<rect x="672" y="335" width="60" height="26" fill="#dcf0cb" stroke="white"/>
+<text x="702.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+10%</text>
+<rect x="733" y="335" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="763.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+274%</text>
+<rect x="794" y="335" width="60" height="26" fill="#dce0b8" stroke="white"/>
+<text x="824.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+20%</text>
+<rect x="855" y="335" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="885.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3669%</text>
+<rect x="916" y="335" width="60" height="26" fill="#bed0dc" stroke="white"/>
+<text x="946.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-31%</text>
+<rect x="977" y="335" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="1007.5" y="352" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+267%</text>
+<text x="237" y="380" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Load L3 stalls</text>
+<rect x="245" y="362" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="275.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-252%</text>
+<rect x="306" y="362" width="60" height="26" fill="#9bb7dc" stroke="white"/>
+<text x="336.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-47%</text>
+<rect x="367" y="362" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-100%</text>
+<rect x="428" y="362" width="60" height="26" fill="#84a7dc" stroke="white"/>
+<text x="458.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-58%</text>
+<rect x="489" y="362" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-156%</text>
+<rect x="550" y="362" width="60" height="26" fill="#6893dc" stroke="white"/>
+<text x="580.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-72%</text>
+<rect x="611" y="362" width="60" height="26" fill="#dcfcd8" stroke="white"/>
+<text x="641.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+2%</text>
+<rect x="672" y="362" width="60" height="26" fill="#fafbdc" stroke="white"/>
+<text x="702.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2%</text>
+<rect x="733" y="362" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-111%</text>
+<rect x="794" y="362" width="60" height="26" fill="#dcfdda" stroke="white"/>
+<text x="824.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1%</text>
+<rect x="855" y="362" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="885.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+222%</text>
+<rect x="916" y="362" width="60" height="26" fill="#d8e3dc" stroke="white"/>
+<text x="946.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-19%</text>
+<rect x="977" y="362" width="60" height="26" fill="#f1f5dc" stroke="white"/>
+<text x="1007.5" y="379" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-7%</text>
+<text x="237" y="407" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Load memory stalls</text>
+<rect x="245" y="389" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+504%</text>
+<rect x="306" y="389" width="60" height="26" fill="#d0dddc" stroke="white"/>
+<text x="336.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-22%</text>
+<rect x="367" y="389" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-115%</text>
+<rect x="428" y="389" width="60" height="26" fill="#759cdc" stroke="white"/>
+<text x="458.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-66%</text>
+<rect x="489" y="389" width="60" height="26" fill="#2f6adc" stroke="white"/>
+<text x="519.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-99%</text>
+<rect x="550" y="389" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-126%</text>
+<rect x="611" y="389" width="60" height="26" fill="#dcfbd7" stroke="white"/>
+<text x="641.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+2%</text>
+<rect x="672" y="389" width="60" height="26" fill="#f1f5dc" stroke="white"/>
+<text x="702.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-6%</text>
+<rect x="733" y="389" width="60" height="26" fill="#86a9dc" stroke="white"/>
+<text x="763.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-57%</text>
+<rect x="794" y="389" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="824.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-259%</text>
+<rect x="855" y="389" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="885.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+816%</text>
+<rect x="916" y="389" width="60" height="26" fill="#f9fbdc" stroke="white"/>
+<text x="946.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3%</text>
+<rect x="977" y="389" width="60" height="26" fill="#dcf2cd" stroke="white"/>
+<text x="1007.5" y="406" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+9%</text>
+<text x="237" y="434" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Memory-not-ready stalls</text>
+<rect x="245" y="416" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1167%</text>
+<rect x="306" y="416" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="336.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1090%</text>
+<rect x="367" y="416" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="397.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+200%</text>
+<rect x="428" y="416" width="60" height="26" fill="#f3f6dc" stroke="white"/>
+<text x="458.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-6%</text>
+<rect x="489" y="416" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="519.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+356%</text>
+<rect x="550" y="416" width="60" height="26" fill="#dc773d" stroke="white"/>
+<text x="580.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+91%</text>
+<rect x="611" y="416" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="641.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+216%</text>
+<rect x="672" y="416" width="60" height="26" fill="#dcfdd9" stroke="white"/>
+<text x="702.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1%</text>
+<rect x="733" y="416" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-388%</text>
+<rect x="794" y="416" width="60" height="26" fill="#dcd7ad" stroke="white"/>
+<text x="824.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+26%</text>
+<rect x="855" y="416" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="885.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1728%</text>
+<rect x="916" y="416" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="946.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-138%</text>
+<rect x="977" y="416" width="60" height="26" fill="#dcbc8e" stroke="white"/>
+<text x="1007.5" y="433" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+44%</text>
+<text x="237" y="461" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Backend stall cycles</text>
+<rect x="245" y="443" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="275.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2744%</text>
+<rect x="306" y="443" width="60" height="26" fill="#d1dedc" stroke="white"/>
+<text x="336.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-21%</text>
+<rect x="367" y="443" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-107%</text>
+<rect x="428" y="443" width="60" height="26" fill="#4c7fdc" stroke="white"/>
+<text x="458.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-85%</text>
+<rect x="489" y="443" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-328%</text>
+<rect x="550" y="443" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-112%</text>
+<rect x="611" y="443" width="60" height="26" fill="#fcfddc" stroke="white"/>
+<text x="641.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1%</text>
+<rect x="672" y="443" width="60" height="26" fill="#fcfddc" stroke="white"/>
+<text x="702.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1%</text>
+<rect x="733" y="443" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-196%</text>
+<rect x="794" y="443" width="60" height="26" fill="#dce6bf" stroke="white"/>
+<text x="824.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+16%</text>
+<rect x="855" y="443" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="885.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+142%</text>
+<rect x="916" y="443" width="60" height="26" fill="#f9fbdc" stroke="white"/>
+<text x="946.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3%</text>
+<rect x="977" y="443" width="60" height="26" fill="#dcd1a7" stroke="white"/>
+<text x="1007.5" y="460" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+30%</text>
+<text x="237" y="488" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Execute stall cycles</text>
+<rect x="245" y="470" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1239%</text>
+<rect x="306" y="470" width="60" height="26" fill="#c8d7dc" stroke="white"/>
+<text x="336.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-26%</text>
+<rect x="367" y="470" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-104%</text>
+<rect x="428" y="470" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="458.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+907%</text>
+<rect x="489" y="470" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-340%</text>
+<rect x="550" y="470" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-271%</text>
+<rect x="611" y="470" width="60" height="26" fill="#f8fadc" stroke="white"/>
+<text x="641.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3%</text>
+<rect x="672" y="470" width="60" height="26" fill="#fafcdc" stroke="white"/>
+<text x="702.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2%</text>
+<rect x="733" y="470" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-226%</text>
+<rect x="794" y="470" width="60" height="26" fill="#dccda1" stroke="white"/>
+<text x="824.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+33%</text>
+<rect x="855" y="470" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="885.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-111%</text>
+<rect x="916" y="470" width="60" height="26" fill="#f7f9dc" stroke="white"/>
+<text x="946.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-4%</text>
+<rect x="977" y="470" width="60" height="26" fill="#dcd1a6" stroke="white"/>
+<text x="1007.5" y="487" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+31%</text>
+<text x="237" y="515" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Fetch IFU-not-ready stalls</text>
+<rect x="245" y="497" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="275.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2091%</text>
+<rect x="306" y="497" width="60" height="26" fill="#c7d7dc" stroke="white"/>
+<text x="336.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-26%</text>
+<rect x="367" y="497" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="397.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+122%</text>
+<rect x="428" y="497" width="60" height="26" fill="#4a7edc" stroke="white"/>
+<text x="458.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-86%</text>
+<rect x="489" y="497" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-317%</text>
+<rect x="550" y="497" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-106%</text>
+<rect x="611" y="497" width="60" height="26" fill="#dcfedb" stroke="white"/>
+<text x="641.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+0%</text>
+<rect x="672" y="497" width="60" height="26" fill="#f2f5dc" stroke="white"/>
+<text x="702.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-6%</text>
+<rect x="733" y="497" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-208%</text>
+<rect x="794" y="497" width="60" height="26" fill="#dce8c1" stroke="white"/>
+<text x="824.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+15%</text>
+<rect x="855" y="497" width="60" height="26" fill="#dca573" stroke="white"/>
+<text x="885.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+60%</text>
+<rect x="916" y="497" width="60" height="26" fill="#f9fadc" stroke="white"/>
+<text x="946.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3%</text>
+<rect x="977" y="497" width="60" height="26" fill="#dcd2a8" stroke="white"/>
+<text x="1007.5" y="514" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+30%</text>
+<text x="237" y="542" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Instruction-buffer-full stalls</text>
+<rect x="245" y="524" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="275.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1364%</text>
+<rect x="306" y="524" width="60" height="26" fill="#c7d7dc" stroke="white"/>
+<text x="336.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-26%</text>
+<rect x="367" y="524" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-855%</text>
+<rect x="428" y="524" width="60" height="26" fill="#4d7fdc" stroke="white"/>
+<text x="458.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-85%</text>
+<rect x="489" y="524" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-312%</text>
+<rect x="550" y="524" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-107%</text>
+<rect x="611" y="524" width="60" height="26" fill="#fdfedc" stroke="white"/>
+<text x="641.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1%</text>
+<rect x="672" y="524" width="60" height="26" fill="#fafbdc" stroke="white"/>
+<text x="702.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2%</text>
+<rect x="733" y="524" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-205%</text>
+<rect x="794" y="524" width="60" height="26" fill="#dce8c1" stroke="white"/>
+<text x="824.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+15%</text>
+<rect x="855" y="524" width="60" height="26" fill="#dca573" stroke="white"/>
+<text x="885.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+60%</text>
+<rect x="916" y="524" width="60" height="26" fill="#f9fadc" stroke="white"/>
+<text x="946.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3%</text>
+<rect x="977" y="524" width="60" height="26" fill="#dcd2a7" stroke="white"/>
+<text x="1007.5" y="541" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+30%</text>
+<text x="237" y="569" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">IQ stall cycles</text>
+<rect x="245" y="551" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+4683%</text>
+<rect x="306" y="551" width="60" height="26" fill="#c2d3dc" stroke="white"/>
+<text x="336.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-29%</text>
+<rect x="367" y="551" width="60" height="26" fill="#5c8bdc" stroke="white"/>
+<text x="397.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-77%</text>
+<rect x="428" y="551" width="60" height="26" fill="#5787dc" stroke="white"/>
+<text x="458.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-80%</text>
+<rect x="489" y="551" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-424%</text>
+<rect x="550" y="551" width="60" height="26" fill="#d3dfdc" stroke="white"/>
+<text x="580.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-21%</text>
+<rect x="611" y="551" width="60" height="26" fill="#eff4dc" stroke="white"/>
+<text x="641.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-7%</text>
+<rect x="672" y="551" width="60" height="26" fill="#dcfeda" stroke="white"/>
+<text x="702.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1%</text>
+<rect x="733" y="551" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-168%</text>
+<rect x="794" y="551" width="60" height="26" fill="#dcdfb6" stroke="white"/>
+<text x="824.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+21%</text>
+<rect x="855" y="551" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="885.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1177%</text>
+<rect x="916" y="551" width="60" height="26" fill="#dcfbd8" stroke="white"/>
+<text x="946.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+2%</text>
+<rect x="977" y="551" width="60" height="26" fill="#dcd2a7" stroke="white"/>
+<text x="1007.5" y="568" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+30%</text>
+<text x="237" y="596" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Decode-full stalls</text>
+<rect x="245" y="578" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="275.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-4451%</text>
+<rect x="306" y="578" width="60" height="26" fill="#d4e0dc" stroke="white"/>
+<text x="336.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-20%</text>
+<rect x="367" y="578" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="397.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-108%</text>
+<rect x="428" y="578" width="60" height="26" fill="#4c7fdc" stroke="white"/>
+<text x="458.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-85%</text>
+<rect x="489" y="578" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-334%</text>
+<rect x="550" y="578" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-115%</text>
+<rect x="611" y="578" width="60" height="26" fill="#fafbdc" stroke="white"/>
+<text x="641.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-2%</text>
+<rect x="672" y="578" width="60" height="26" fill="#dcfcd8" stroke="white"/>
+<text x="702.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+2%</text>
+<rect x="733" y="578" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-190%</text>
+<rect x="794" y="578" width="60" height="26" fill="#dce6be" stroke="white"/>
+<text x="824.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+17%</text>
+<rect x="855" y="578" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="885.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+113%</text>
+<rect x="916" y="578" width="60" height="26" fill="#f9fbdc" stroke="white"/>
+<text x="946.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-3%</text>
+<rect x="977" y="578" width="60" height="26" fill="#dcd1a7" stroke="white"/>
+<text x="1007.5" y="595" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+30%</text>
+<text x="237" y="623" font-family="Arial,sans-serif" font-size="11px" text-anchor="end" font-weight="normal" fill="#243447">Branch mispredicts</text>
+<rect x="245" y="605" width="60" height="26" fill="#dc692d" stroke="white"/>
+<text x="275.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+1458%</text>
+<rect x="306" y="605" width="60" height="26" fill="#dccda2" stroke="white"/>
+<text x="336.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+33%</text>
+<rect x="367" y="605" width="60" height="26" fill="#336ddc" stroke="white"/>
+<text x="397.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-97%</text>
+<rect x="428" y="605" width="60" height="26" fill="#4379dc" stroke="white"/>
+<text x="458.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-89%</text>
+<rect x="489" y="605" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="519.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-145%</text>
+<rect x="550" y="605" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="580.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-168%</text>
+<rect x="611" y="605" width="60" height="26" fill="#dcfad6" stroke="white"/>
+<text x="641.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+3%</text>
+<rect x="672" y="605" width="60" height="26" fill="#fcfddc" stroke="white"/>
+<text x="702.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1%</text>
+<rect x="733" y="605" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="763.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-106%</text>
+<rect x="794" y="605" width="60" height="26" fill="#2d69dc" stroke="white"/>
+<text x="824.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-134%</text>
+<rect x="855" y="605" width="60" height="26" fill="#d9e4dc" stroke="white"/>
+<text x="885.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-18%</text>
+<rect x="916" y="605" width="60" height="26" fill="#fdfddc" stroke="white"/>
+<text x="946.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">-1%</text>
+<rect x="977" y="605" width="60" height="26" fill="#dcd3a9" stroke="white"/>
+<text x="1007.5" y="622" font-family="Arial,sans-serif" font-size="9px" text-anchor="middle" font-weight="normal" fill="#17202a">+29%</text>
+<rect x="245" y="667" width="31" height="12" fill="#2d69dc"/>
+<text x="260" y="694" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">-100%</text>
+<rect x="276" y="667" width="31" height="12" fill="#5787dc"/>
+<rect x="307" y="667" width="31" height="12" fill="#81a5dc"/>
+<rect x="338" y="667" width="31" height="12" fill="#abc3dc"/>
+<rect x="369" y="667" width="31" height="12" fill="#d5e1dc"/>
+<rect x="400" y="667" width="31" height="12" fill="#dcffdc"/>
+<text x="415" y="694" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">+0%</text>
+<rect x="431" y="667" width="31" height="12" fill="#dce1b9"/>
+<rect x="462" y="667" width="31" height="12" fill="#dcc396"/>
+<rect x="493" y="667" width="31" height="12" fill="#dca573"/>
+<rect x="524" y="667" width="31" height="12" fill="#dc8750"/>
+<rect x="555" y="667" width="31" height="12" fill="#dc692d"/>
+<text x="570" y="694" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">+100%</text>
+<text x="237" y="677" font-family="Arial,sans-serif" font-size="10px" text-anchor="end" font-weight="normal" fill="#52606d">图例</text>
+</svg>

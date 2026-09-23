@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1095" height="470" viewBox="0 0 1095 470">
+<rect width="100%" height="100%" fill="white"/>
+<text x="18" y="25" font-family="Arial,sans-serif" font-size="19px" text-anchor="start" font-weight="bold" fill="#243447">计数器变化与 IPC 变化的关系</text>
+<text x="18" y="46" font-family="Arial,sans-serif" font-size="12px" text-anchor="start" font-weight="normal" fill="#52606d">每点为一个切片；r 为未加权 Pearson 相关系数，r_w 为 SimPoint 权重相关系数。</text>
+<text x="12" y="74" font-family="Arial,sans-serif" font-size="13px" text-anchor="start" font-weight="bold" fill="#243447">TLB misses</text>
+<text x="12" y="90" font-family="Arial,sans-serif" font-size="11px" text-anchor="start" font-weight="normal" fill="#52606d">r=-0.12, r_w=-0.33</text>
+<line x1="53" y1="165.5" x2="338" y2="165.5" stroke="#d1d5db"/>
+<line x1="216.061669829222" y1="93" x2="216.061669829222" y2="238" stroke="#d1d5db"/>
+<rect x="53" y="93" width="285" height="145" fill="none" stroke="#9aa5b1"/>
+<text x="195.5" y="263" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">计数器变化 (%)</text>
+<text x="17" y="165.5" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-90 17 165.5)">IPC变化 (%)</text>
+<circle cx="123.1" cy="190.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_1773_0.00540212: counter -76.24%, IPC -6.93%</title></circle>
+<circle cx="53.0" cy="151.1" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_2709_0.335742: counter -133.72%, IPC +3.98%</title></circle>
+<circle cx="100.2" cy="217.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_4019_0.180498: counter -94.99%, IPC -14.39%</title></circle>
+<circle cx="94.5" cy="176.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5049_0.144169: counter -99.72%, IPC -3.05%</title></circle>
+<circle cx="77.8" cy="152.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5466_0.103316: counter -113.39%, IPC +3.52%</title></circle>
+<circle cx="60.9" cy="189.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_7363_0.059896: counter -127.21%, IPC -6.69%</title></circle>
+<circle cx="115.3" cy="163.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8719_0.00175569: counter -82.67%, IPC +0.44%</title></circle>
+<circle cx="100.2" cy="165.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8725_0.00513201: counter -94.99%, IPC -0.12%</title></circle>
+<circle cx="94.0" cy="167.3" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8837_0.0355865: counter -100.13%, IPC -0.49%</title></circle>
+<circle cx="105.3" cy="152.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_9417_0.03822: counter -90.82%, IPC +3.47%</title></circle>
+<circle cx="210.1" cy="171.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_10311_0.0726585: counter -4.93%, IPC -1.72%</title></circle>
+<circle cx="96.0" cy="163.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_11026_0.00877845: counter -98.42%, IPC +0.43%</title></circle>
+<circle cx="92.9" cy="159.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_13715_0.00884597: counter -101.01%, IPC +1.61%</title></circle>
+<text x="377" y="74" font-family="Arial,sans-serif" font-size="13px" text-anchor="start" font-weight="bold" fill="#243447">L1 demand misses</text>
+<text x="377" y="90" font-family="Arial,sans-serif" font-size="11px" text-anchor="start" font-weight="normal" fill="#52606d">r=-0.07, r_w=-0.05</text>
+<line x1="418" y1="165.5" x2="703" y2="165.5" stroke="#d1d5db"/>
+<line x1="697.8927872089072" y1="93" x2="697.8927872089072" y2="238" stroke="#d1d5db"/>
+<rect x="418" y="93" width="285" height="145" fill="none" stroke="#9aa5b1"/>
+<text x="560.5" y="263" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">计数器变化 (%)</text>
+<text x="382" y="165.5" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-90 382 165.5)">IPC变化 (%)</text>
+<circle cx="682.7" cy="190.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_1773_0.00540212: counter -297.01%, IPC -6.93%</title></circle>
+<circle cx="693.1" cy="151.1" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_2709_0.335742: counter -93.59%, IPC +3.98%</title></circle>
+<circle cx="693.5" cy="217.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_4019_0.180498: counter -85.30%, IPC -14.39%</title></circle>
+<circle cx="694.6" cy="176.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5049_0.144169: counter -65.18%, IPC -3.05%</title></circle>
+<circle cx="685.5" cy="152.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5466_0.103316: counter -243.13%, IPC +3.52%</title></circle>
+<circle cx="692.5" cy="189.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_7363_0.059896: counter -105.07%, IPC -6.69%</title></circle>
+<circle cx="697.8" cy="163.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8719_0.00175569: counter -2.07%, IPC +0.44%</title></circle>
+<circle cx="418.0" cy="165.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8725_0.00513201: counter -5480.34%, IPC -0.12%</title></circle>
+<circle cx="683.1" cy="167.3" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8837_0.0355865: counter -289.96%, IPC -0.49%</title></circle>
+<circle cx="695.9" cy="152.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_9417_0.03822: counter -39.12%, IPC +3.47%</title></circle>
+<circle cx="697.7" cy="171.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_10311_0.0726585: counter -4.14%, IPC -1.72%</title></circle>
+<circle cx="698.1" cy="163.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_11026_0.00877845: counter +4.43%, IPC +0.43%</title></circle>
+<circle cx="700.6" cy="159.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_13715_0.00884597: counter +53.76%, IPC +1.61%</title></circle>
+<text x="742" y="74" font-family="Arial,sans-serif" font-size="13px" text-anchor="start" font-weight="bold" fill="#243447">L2 demand misses</text>
+<text x="742" y="90" font-family="Arial,sans-serif" font-size="11px" text-anchor="start" font-weight="normal" fill="#52606d">r=-0.17, r_w=+0.16</text>
+<line x1="783" y1="165.5" x2="1068" y2="165.5" stroke="#d1d5db"/>
+<line x1="877.9462501751677" y1="93" x2="877.9462501751677" y2="238" stroke="#d1d5db"/>
+<rect x="783" y="93" width="285" height="145" fill="none" stroke="#9aa5b1"/>
+<text x="925.5" y="263" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">计数器变化 (%)</text>
+<text x="747" y="165.5" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-90 747 165.5)">IPC变化 (%)</text>
+<circle cx="1068.0" cy="190.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_1773_0.00540212: counter +519.97%, IPC -6.93%</title></circle>
+<circle cx="859.8" cy="151.1" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_2709_0.335742: counter -49.66%, IPC +3.98%</title></circle>
+<circle cx="838.5" cy="217.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_4019_0.180498: counter -107.88%, IPC -14.39%</title></circle>
+<circle cx="860.3" cy="176.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5049_0.144169: counter -48.21%, IPC -3.05%</title></circle>
+<circle cx="823.9" cy="152.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5466_0.103316: counter -147.96%, IPC +3.52%</title></circle>
+<circle cx="824.0" cy="189.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_7363_0.059896: counter -147.70%, IPC -6.69%</title></circle>
+<circle cx="878.0" cy="163.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8719_0.00175569: counter +0.12%, IPC +0.44%</title></circle>
+<circle cx="874.7" cy="165.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8725_0.00513201: counter -8.84%, IPC -0.12%</title></circle>
+<circle cx="836.7" cy="167.3" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8837_0.0355865: counter -112.84%, IPC -0.49%</title></circle>
+<circle cx="844.9" cy="152.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_9417_0.03822: counter -90.45%, IPC +3.47%</title></circle>
+<circle cx="783.0" cy="171.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_10311_0.0726585: counter -259.76%, IPC -1.72%</title></circle>
+<circle cx="882.5" cy="163.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_11026_0.00877845: counter +12.36%, IPC +0.43%</title></circle>
+<circle cx="899.0" cy="159.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_13715_0.00884597: counter +57.48%, IPC +1.61%</title></circle>
+<text x="12" y="309" font-family="Arial,sans-serif" font-size="13px" text-anchor="start" font-weight="bold" fill="#243447">Load L2 stalls</text>
+<text x="12" y="325" font-family="Arial,sans-serif" font-size="11px" text-anchor="start" font-weight="normal" fill="#52606d">r=-0.53, r_w=-0.70</text>
+<line x1="53" y1="400.5" x2="338" y2="400.5" stroke="#d1d5db"/>
+<line x1="190.2051916504973" y1="328" x2="190.2051916504973" y2="473" stroke="#d1d5db"/>
+<rect x="53" y="328" width="285" height="145" fill="none" stroke="#9aa5b1"/>
+<text x="195.5" y="498" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">计数器变化 (%)</text>
+<text x="17" y="400.5" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-90 17 400.5)">IPC变化 (%)</text>
+<circle cx="213.2" cy="425.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_1773_0.00540212: counter +615.34%, IPC -6.93%</title></circle>
+<circle cx="189.2" cy="386.1" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_2709_0.335742: counter -25.98%, IPC +3.98%</title></circle>
+<circle cx="338.0" cy="452.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_4019_0.180498: counter +3951.75%, IPC -14.39%</title></circle>
+<circle cx="198.1" cy="411.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5049_0.144169: counter +211.57%, IPC -3.05%</title></circle>
+<circle cx="196.9" cy="387.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5466_0.103316: counter +180.26%, IPC +3.52%</title></circle>
+<circle cx="188.2" cy="424.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_7363_0.059896: counter -54.12%, IPC -6.69%</title></circle>
+<circle cx="190.3" cy="398.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8719_0.00175569: counter +3.36%, IPC +0.44%</title></circle>
+<circle cx="190.6" cy="400.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8725_0.00513201: counter +9.64%, IPC -0.12%</title></circle>
+<circle cx="200.5" cy="402.3" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8837_0.0355865: counter +274.28%, IPC -0.49%</title></circle>
+<circle cx="191.0" cy="387.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_9417_0.03822: counter +20.10%, IPC +3.47%</title></circle>
+<circle cx="53.0" cy="406.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_10311_0.0726585: counter -3668.60%, IPC -1.72%</title></circle>
+<circle cx="189.1" cy="398.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_11026_0.00877845: counter -30.81%, IPC +0.43%</title></circle>
+<circle cx="200.2" cy="394.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_13715_0.00884597: counter +267.47%, IPC +1.61%</title></circle>
+<text x="377" y="309" font-family="Arial,sans-serif" font-size="13px" text-anchor="start" font-weight="bold" fill="#243447">Memory-not-ready stalls</text>
+<text x="377" y="325" font-family="Arial,sans-serif" font-size="11px" text-anchor="start" font-weight="normal" fill="#52606d">r=-0.30, r_w=-0.52</text>
+<line x1="418" y1="400.5" x2="703" y2="400.5" stroke="#d1d5db"/>
+<line x1="588.0928222205572" y1="328" x2="588.0928222205572" y2="473" stroke="#d1d5db"/>
+<rect x="418" y="328" width="285" height="145" fill="none" stroke="#9aa5b1"/>
+<text x="560.5" y="498" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">计数器变化 (%)</text>
+<text x="382" y="400.5" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-90 382 400.5)">IPC变化 (%)</text>
+<circle cx="703.0" cy="425.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_1773_0.00540212: counter +1167.45%, IPC -6.93%</title></circle>
+<circle cx="480.8" cy="386.1" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_2709_0.335742: counter -1089.77%, IPC +3.98%</title></circle>
+<circle cx="607.8" cy="452.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_4019_0.180498: counter +200.04%, IPC -14.39%</title></circle>
+<circle cx="587.5" cy="411.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5049_0.144169: counter -5.63%, IPC -3.05%</title></circle>
+<circle cx="623.1" cy="387.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5466_0.103316: counter +355.75%, IPC +3.52%</title></circle>
+<circle cx="597.0" cy="424.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_7363_0.059896: counter +90.51%, IPC -6.69%</title></circle>
+<circle cx="609.3" cy="398.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8719_0.00175569: counter +215.65%, IPC +0.44%</title></circle>
+<circle cx="588.2" cy="400.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8725_0.00513201: counter +1.19%, IPC -0.12%</title></circle>
+<circle cx="549.9" cy="402.3" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8837_0.0355865: counter -388.44%, IPC -0.49%</title></circle>
+<circle cx="590.7" cy="387.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_9417_0.03822: counter +26.50%, IPC +3.47%</title></circle>
+<circle cx="418.0" cy="406.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_10311_0.0726585: counter -1728.14%, IPC -1.72%</title></circle>
+<circle cx="574.5" cy="398.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_11026_0.00877845: counter -138.50%, IPC +0.43%</title></circle>
+<circle cx="592.4" cy="394.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_13715_0.00884597: counter +44.07%, IPC +1.61%</title></circle>
+<text x="742" y="309" font-family="Arial,sans-serif" font-size="13px" text-anchor="start" font-weight="bold" fill="#243447">Branch mispredicts</text>
+<text x="742" y="325" font-family="Arial,sans-serif" font-size="11px" text-anchor="start" font-weight="normal" fill="#52606d">r=-0.26, r_w=+0.22</text>
+<line x1="783" y1="400.5" x2="1068" y2="400.5" stroke="#d1d5db"/>
+<line x1="812.3852017638823" y1="328" x2="812.3852017638823" y2="473" stroke="#d1d5db"/>
+<rect x="783" y="328" width="285" height="145" fill="none" stroke="#9aa5b1"/>
+<text x="925.5" y="498" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d">计数器变化 (%)</text>
+<text x="747" y="400.5" font-family="Arial,sans-serif" font-size="10px" text-anchor="middle" font-weight="normal" fill="#52606d" transform="rotate(-90 747 400.5)">IPC变化 (%)</text>
+<circle cx="1068.0" cy="425.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_1773_0.00540212: counter +1458.19%, IPC -6.93%</title></circle>
+<circle cx="818.2" cy="386.1" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_2709_0.335742: counter +33.11%, IPC +3.98%</title></circle>
+<circle cx="795.4" cy="452.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_4019_0.180498: counter -97.08%, IPC -14.39%</title></circle>
+<circle cx="796.7" cy="411.6" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5049_0.144169: counter -89.32%, IPC -3.05%</title></circle>
+<circle cx="787.0" cy="387.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_5466_0.103316: counter -144.74%, IPC +3.52%</title></circle>
+<circle cx="783.0" cy="424.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_7363_0.059896: counter -167.63%, IPC -6.69%</title></circle>
+<circle cx="812.9" cy="398.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8719_0.00175569: counter +2.96%, IPC +0.44%</title></circle>
+<circle cx="812.2" cy="400.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8725_0.00513201: counter -1.28%, IPC -0.12%</title></circle>
+<circle cx="793.7" cy="402.3" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_8837_0.0355865: counter -106.36%, IPC -0.49%</title></circle>
+<circle cx="788.9" cy="387.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_9417_0.03822: counter -134.21%, IPC +3.47%</title></circle>
+<circle cx="809.2" cy="406.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_10311_0.0726585: counter -17.92%, IPC -1.72%</title></circle>
+<circle cx="812.3" cy="398.9" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_11026_0.00877845: counter -0.68%, IPC +0.43%</title></circle>
+<circle cx="817.4" cy="394.7" r="4" fill="#1976a8" stroke="white" stroke-width="1"><title>mcf_13715_0.00884597: counter +28.78%, IPC +1.61%</title></circle>
+</svg>

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="640" viewBox="0 0 1120 640">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:Arial,sans-serif;fill:#243447}.axis{stroke:#7b8794;stroke-width:1}.grid{stroke:#e5e7eb;stroke-width:1}.title{font-size:20px;font-weight:700}.label{font-size:11px}</style>
+<text x="90" y="30" class="title">mcf per-slice cycle count: A THP off vs B THP on</text>
+<line x1="90" y1="60.0" x2="1090" y2="60.0" class="grid"/>
+<text x="82" y="64.0" text-anchor="end" class="label">71.4M</text>
+<line x1="90" y1="182.5" x2="1090" y2="182.5" class="grid"/>
+<text x="82" y="186.5" text-anchor="end" class="label">53.5M</text>
+<line x1="90" y1="305.0" x2="1090" y2="305.0" class="grid"/>
+<text x="82" y="309.0" text-anchor="end" class="label">35.7M</text>
+<line x1="90" y1="427.5" x2="1090" y2="427.5" class="grid"/>
+<text x="82" y="431.5" text-anchor="end" class="label">17.8M</text>
+<line x1="90" y1="550.0" x2="1090" y2="550.0" class="grid"/>
+<text x="82" y="554.0" text-anchor="end" class="label">0.0M</text>
+<line x1="90" y1="550" x2="1090" y2="550" class="axis"/>
+<rect x="113.5" y="275.5" width="13" height="274.5" fill="#64748b"/>
+<rect x="130.5" y="255.1" width="13" height="294.9" fill="#dc2626"/>
+<text x="128.5" y="568" text-anchor="middle" class="label">1773</text>
+<text x="128.5" y="583" text-anchor="middle" class="label">0.005</text>
+<rect x="190.4" y="60.0" width="13" height="490.0" fill="#64748b"/>
+<rect x="207.4" y="78.8" width="13" height="471.2" fill="#dc2626"/>
+<text x="205.4" y="568" text-anchor="middle" class="label">2709</text>
+<text x="205.4" y="583" text-anchor="middle" class="label">0.336</text>
+<rect x="267.3" y="185.3" width="13" height="364.7" fill="#64748b"/>
+<rect x="284.3" y="124.0" width="13" height="426.0" fill="#dc2626"/>
+<text x="282.3" y="568" text-anchor="middle" class="label">4019</text>
+<text x="282.3" y="583" text-anchor="middle" class="label">0.180</text>
+<rect x="344.2" y="438.2" width="13" height="111.8" fill="#64748b"/>
+<rect x="361.2" y="434.7" width="13" height="115.3" fill="#dc2626"/>
+<text x="359.2" y="568" text-anchor="middle" class="label">5049</text>
+<text x="359.2" y="583" text-anchor="middle" class="label">0.144</text>
+<rect x="421.2" y="416.8" width="13" height="133.2" fill="#64748b"/>
+<rect x="438.2" y="421.3" width="13" height="128.7" fill="#dc2626"/>
+<text x="436.2" y="568" text-anchor="middle" class="label">5466</text>
+<text x="436.2" y="583" text-anchor="middle" class="label">0.103</text>
+<rect x="498.1" y="127.1" width="13" height="422.9" fill="#64748b"/>
+<rect x="515.1" y="96.8" width="13" height="453.2" fill="#dc2626"/>
+<text x="513.1" y="568" text-anchor="middle" class="label">7363</text>
+<text x="513.1" y="583" text-anchor="middle" class="label">0.060</text>
+<rect x="575.0" y="168.2" width="13" height="381.8" fill="#64748b"/>
+<rect x="592.0" y="169.8" width="13" height="380.2" fill="#dc2626"/>
+<text x="590.0" y="568" text-anchor="middle" class="label">8719</text>
+<text x="590.0" y="583" text-anchor="middle" class="label">0.002</text>
+<rect x="651.9" y="353.7" width="13" height="196.3" fill="#64748b"/>
+<rect x="668.9" y="353.4" width="13" height="196.6" fill="#dc2626"/>
+<text x="666.9" y="568" text-anchor="middle" class="label">8725</text>
+<text x="666.9" y="583" text-anchor="middle" class="label">0.005</text>
+<rect x="728.8" y="311.9" width="13" height="238.1" fill="#64748b"/>
+<rect x="745.8" y="310.7" width="13" height="239.3" fill="#dc2626"/>
+<text x="743.8" y="568" text-anchor="middle" class="label">8837</text>
+<text x="743.8" y="583" text-anchor="middle" class="label">0.036</text>
+<rect x="805.8" y="394.9" width="13" height="155.1" fill="#64748b"/>
+<rect x="822.8" y="400.1" width="13" height="149.9" fill="#dc2626"/>
+<text x="820.8" y="568" text-anchor="middle" class="label">9417</text>
+<text x="820.8" y="583" text-anchor="middle" class="label">0.038</text>
+<rect x="882.7" y="127.5" width="13" height="422.5" fill="#64748b"/>
+<rect x="899.7" y="120.2" width="13" height="429.8" fill="#dc2626"/>
+<text x="897.7" y="568" text-anchor="middle" class="label">10311</text>
+<text x="897.7" y="583" text-anchor="middle" class="label">0.073</text>
+<rect x="959.6" y="326.5" width="13" height="223.5" fill="#64748b"/>
+<rect x="976.6" y="327.5" width="13" height="222.5" fill="#dc2626"/>
+<text x="974.6" y="568" text-anchor="middle" class="label">11026</text>
+<text x="974.6" y="583" text-anchor="middle" class="label">0.009</text>
+<rect x="1036.5" y="258.0" width="13" height="292.0" fill="#64748b"/>
+<rect x="1053.5" y="262.6" width="13" height="287.4" fill="#dc2626"/>
+<text x="1051.5" y="568" text-anchor="middle" class="label">13715</text>
+<text x="1051.5" y="583" text-anchor="middle" class="label">0.009</text>
+<rect x="850" y="45" width="12" height="12" fill="#64748b"/><text x="868" y="55" class="label">A THP off</text>
+<rect x="1000" y="45" width="12" height="12" fill="#dc2626"/><text x="1018" y="55" class="label">B THP on</text>
+<text x="90" y="615" class="label">x-axis: simpoint id / slice weight; y-axis: cycle count</text>
+</svg>

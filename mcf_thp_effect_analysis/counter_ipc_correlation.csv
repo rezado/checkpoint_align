@@ -1,0 +1,21 @@
+metric,label,category,pearson_r,weighted_pearson_r
+tlb_miss,TLB misses,address-translation pressure,-0.122259,-0.334082
+tlb_req_count,TLB requests,address-translation pressure,-0.197788,-0.456820
+ptw_req_count,Page-table-walk requests,page-table-walk traffic,0.072382,0.312339
+ptw_resp_count,Page-table-walk responses,page-table-walk traffic,0.070297,0.310436
+E2_L2AReqSource_PTW_Miss,PTW-originated L2 misses,page-table-walk traffic,-0.369611,-0.505168
+l1DemandMiss,L1 demand misses,data-cache pressure,-0.069316,-0.050419
+l2demandMiss,L2 demand misses,data-cache pressure,-0.167360,0.163783
+dcache_miss,D-cache misses,data-cache pressure,-0.273968,0.065398
+mem_cycle,Memory cycles,memory-system activity,0.099858,0.590277
+LoadL2Stall,Load L2 stalls,load latency,-0.526760,-0.702970
+LoadL3Stall,Load L3 stalls,load latency,0.270387,0.146294
+LoadMemStall,Load memory stalls,load latency,-0.143656,0.091837
+MemNotReadyStall,Memory-not-ready stalls,backend readiness,-0.303773,-0.524715
+backend_stall_cycle,Backend stall cycles,backend readiness,0.319092,0.094419
+exec_stall_cycle,Execute stall cycles,backend readiness,-0.249761,-0.048329
+stallCycles_fetch_ifuNotReady,Fetch IFU-not-ready stalls,front-end readiness,0.236616,-0.305673
+stallCycles_ibufferFull,Instruction-buffer-full stalls,front-end readiness,0.655361,0.820122
+stall_cycle_iq,IQ stall cycles,front-end/backend queues,-0.317269,-0.066139
+stallCycles_decodeFull,Decode-full stalls,front-end/backend queues,0.317445,0.084385
+branchMispredicts,Branch mispredicts,control flow,-0.257423,0.223679
